@@ -8,4 +8,6 @@
 
 #include "GL_framework.h"
 
-
+//myRenderCode(currentTime);
+//myInitCode();
+//myCleanupCode();

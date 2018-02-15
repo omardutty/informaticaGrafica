@@ -28,6 +28,16 @@ namespace Cube {
 	void drawCube();
 }
 
+namespace MyFirstShader {
+	void myInitCode(void);
+	GLuint myShaderCompile(void);
+
+	void myCleanupCode(void);
+	void myRenderCode(double currentTime);
+
+	GLuint myRenderProgram;
+	GLuint myVAO;
+}
 
 
 
@@ -139,6 +149,9 @@ void GLrender(double currentTime) {
 	Axis::drawAxis();
 	Cube::drawCube();*/
 
+	//Cambiar color de la pantalla respecte del temps
+	const GLfloat red[] = {0.5f+0.5f*(float)sin(currentTime),0.5f + 0.5f*(float)cos(currentTime),0.0f,1.0f };
+	glClearBufferfv(GL_COLOR, 0, red);
 
 
 	ImGui::Render();
@@ -987,4 +1000,64 @@ void main() {\n\
 	}
 
 
+}
+
+//Primer Shader
+namespace MyFirstShader {
+	//1. Declare Shader
+	static const GLchar * vertex_shader_source[] =
+	{
+		"#version 330\n\
+		\n\
+		void main(){\n\
+		gl_Position = vec4(0.0,0.0,0.5,1.0);\n\
+		}"
+	};
+
+	static const GLchar * fragment_shader_source[] =
+	{
+		"#version 330\n\
+		\n\
+		out vec4 color;\n\
+		\n\
+		void main(){\n\
+		color = vec4(0.0,0.8,1.0,1.0);\n\
+		}"
+	};
+	//2. Compile and Link Shader
+	GLuint myShaderCompile(void) {
+		GLuint vertex_shader;
+		GLuint fragment_shader;
+		GLuint program;
+
+		vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
+		glCompileShader(vertex_shader);
+
+		fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
+		glCompileShader(fragment_shader);
+
+		program = glCreateProgram();
+		glAttachShader(program, vertex_shader);
+		glAttachShader(program, fragment_shader);
+		glLinkProgram(program);
+
+		glDeleteShader(vertex_shader);
+		glDeleteShader(fragment_shader);
+
+		return program;
+	}
+	//3. Init Shader
+	void myInitCode(void) {
+
+	}
+	//4. Render Shader
+	void myRenderCode(double currentTime) {
+
+	}
+	//5. Cleanup Shader
+	void myCleanupCode(void) {
+
+	}
 }
