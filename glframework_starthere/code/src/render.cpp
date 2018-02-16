@@ -3,9 +3,11 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <cstdio>
 #include <cassert>
+#include<iostream>
 
 #include "GL_framework.h"
 
+bool end = false;
 ///////// fw decl
 namespace ImGui {
 	void Render();
@@ -89,14 +91,32 @@ void GLmousecb(MouseEvent ev) {
 		case MouseEvent::Button::Middle: // MOVE Z
 			RV::panv[2] += diffy * 0.05f;
 			break;
+		case MouseEvent::Button::None: //Custom Movement
+			RV::rota[0] += 0.1;
+			std::cout << RV::panv[0] << std::endl;
+
+			if (RV::panv[0] < 6 && !end) {
+				RV::panv[0] += 0.2;
+			}
+			else {
+				end = true;
+			}
+			if (RV::panv[0] > -6 && end) {
+				RV::panv[0] -= 0.2;
+			}
+			else {
+				end = false;
+			}
+			
+			break;
 		default: break;
 		}
 	} else {
 		RV::prevMouse.button = ev.button;
 		RV::prevMouse.waspressed = true;
 	}
-	RV::prevMouse.lastx = ev.posx;
-	RV::prevMouse.lasty = ev.posy;
+	//RV::prevMouse.lastx = ev.posx;
+	//RV::prevMouse.lasty = ev.posy;
 }
 
 void GLinit(int width, int height) {
@@ -118,8 +138,8 @@ void GLinit(int width, int height) {
 
 
 
-
-
+	Cube::setupCube();
+	//MyFirstShader::myInitCode();
 
 
 
@@ -130,8 +150,8 @@ void GLcleanup() {
 	Axis::cleanupAxis();
 	Cube::cleanupCube();
 */
-
-
+	Cube::cleanupCube();
+	//MyFirstShader::myCleanupCode();
 }
 
 void GLrender(double currentTime) {
@@ -149,9 +169,8 @@ void GLrender(double currentTime) {
 	Axis::drawAxis();
 	Cube::drawCube();*/
 
-	//Cambiar color de la pantalla respecte del temps
-	const GLfloat red[] = {0.5f+0.5f*(float)sin(currentTime),0.5f + 0.5f*(float)cos(currentTime),0.0f,1.0f };
-	glClearBufferfv(GL_COLOR, 0, red);
+	//MyFirstShader::myRenderCode(currentTime);
+	Cube::drawCube();
 
 
 	ImGui::Render();
@@ -1010,7 +1029,11 @@ namespace MyFirstShader {
 		"#version 330\n\
 		\n\
 		void main(){\n\
-		gl_Position = vec4(0.0,0.0,0.5,1.0);\n\
+		const vec4 vertices[4] = vec4[4](vec4(0.25,-0.25,0.5,0.5),\n\
+								 vec4(0.25,0.25,0.5,0.5),\n\
+  								 vec4(-0.25,0.25,0.5,0.5),\n\
+								 vec4(-0.25,-0.25,0.5,0.5));\n\
+		gl_Position = vertices[gl_VertexID];\n\
 		}"
 	};
 
@@ -1021,7 +1044,7 @@ namespace MyFirstShader {
 		out vec4 color;\n\
 		\n\
 		void main(){\n\
-		color = vec4(0.0,0.8,1.0,1.0);\n\
+		color = vec4(0.0,1.0,1.0,1.0);\n\
 		}"
 	};
 	//2. Compile and Link Shader
@@ -1050,14 +1073,27 @@ namespace MyFirstShader {
 	}
 	//3. Init Shader
 	void myInitCode(void) {
-
+		myRenderProgram = myShaderCompile();
+		glCreateVertexArrays(1, &myVAO);
+		glBindVertexArray(myVAO);
 	}
 	//4. Render Shader
 	void myRenderCode(double currentTime) {
+		
+		//Cambiar color de la pantalla respecte del temps
+		const GLfloat red[] = { 0.5f + 0.5f*(float)sin(currentTime),0.5f + 0.5f*(float)cos(currentTime),0.0f,1.0f };
+		//const GLfloat red[] = {0.0f,0.0f,0.0f,1.0f };
+		glClearBufferfv(GL_COLOR, 0, red);
 
+		glUseProgram(myRenderProgram);
+		glPointSize(40.0f);
+		glDrawArrays(GL_POINTS, 0, 4);
+		glDrawArrays(GL_TRIANGLES, 1, 4);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 	//5. Cleanup Shader
 	void myCleanupCode(void) {
-
+		glDeleteVertexArrays(1, &myVAO);
+		glDeleteProgram(myRenderProgram);
 	}
 }
