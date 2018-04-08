@@ -195,9 +195,9 @@ void GLrender(double currentTime) {
 	Exercise1::myRenderCode(currentTime);
 	*/
 	//EX6a
-	/*
+	
 	//EX6a
-	seed = { 0,0,0 };
+	/*seed = { 0,0,0 };
 	MyFirstShader::myRenderCode(currentTime);
 	seed = { 0,4,0 };
 	MyFirstShader::myRenderCode(currentTime);
@@ -212,10 +212,10 @@ void GLrender(double currentTime) {
 	seed = { 0,2,-2 };
 	MyFirstShader::myRenderCode(currentTime);
 	seed = { 3,2,-2 };
-	MyFirstShader::myRenderCode(currentTime);
-	*/
+	MyFirstShader::myRenderCode(currentTime);*/
+	
 	//EX3
-	rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+	/*rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
 	seedR = { -4,fakeGravity,0,1 };
 	Exercise3::myRenderCode(currentTime);
 	rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
@@ -230,8 +230,9 @@ void GLrender(double currentTime) {
 	rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
 	seedR = { 4,fakeGravity,0 ,1 };
 	Exercise3::myRenderCode(currentTime);
-	fakeGravity -= 0.1;
+	fakeGravity -= 0.1;*/
 
+	MyFirstShader::myRenderCode(currentTime);
 
 	ImGui::Render();
 }
@@ -294,17 +295,16 @@ namespace MyFirstShader {
 		static const GLchar* geom_shader_source[] =
 		{ "#version 330 \n\
 			uniform mat4 rotation;\n\
-			uniform vec3 seed;\n\
 			layout(triangles) in;\n\
 			layout(triangle_strip, max_vertices = 72) out;\n\
 			void main()\n\
 			{\n\
-				 vec4 vertices[6] = vec4[6](vec4(-0.5, 2,  -0.5, 1.0),\n\
-												 vec4( -1,  1, - 1,1),\n\
-												 vec4(-0.5, + 2, + 0.5,1),\n\
-												 vec4(-1.5, 0, -0.5,1),\n\
-												 vec4(-1,1,1,1),\n\
-											 	 vec4-1.5,0, 0.5,1));\n\
+				const vec4 vertices[6] = vec4[6](vec4(-0.5, sqrt(3), -0.5, 1.0),\n\
+										vec4(-1,sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,sqrt(3),0.5,1),\n\
+										vec4(-1.5,0,-0.5,1),\n\
+										vec4(-1,sqrt(3)/2,1,1),\n\
+										vec4(-1.5,0,0.5,1));\n\
 				\n\
 //CARA 1\n\
 				for (int i = 0; i<6; i++)\n\
@@ -316,12 +316,12 @@ gl_PrimitiveID = 0;\n\
 				EndPrimitive();\n\
 				\n\
 //CARA 2\n\
-				 vec4 vertices2[6]= vec4[6](vec4(- 0.5, 2, 0.5, 1.0),\n\
-												 vec4(-1, 1, 1, 1.0),\n\
-												 vec4(0.5,2,  0.5, 1),\n\
-												 vec4(- 0.5, 0,  1.5, 1),\n\
-											 	 vec4( 1, 1, 1,1),\n\
-												 vec4(0.5,0, 1.5, 1.0));\n\
+				const vec4 vertices2[6]= vec4[6](vec4(-0.5,sqrt(3), 0.5, 1.0),\n\
+										vec4(-1, sqrt(3)/2, 1, 1.0),\n\
+										vec4(0.5,sqrt(3),0.5,1),\n\
+										vec4(-0.5,0,1.5,1),\n\
+										vec4(1,sqrt(3)/2,1,1),\n\
+										vec4(0.5, 0, 1.5, 1.0));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices2[i]+gl_in[0].gl_Position;\n\
@@ -330,12 +330,12 @@ gl_PrimitiveID = 1;\n\
 				}\n\
 				EndPrimitive();\n\
 //CARA 3\n\
-				 vec4 vertices3[6]= vec4[6](vec4(0.5,2, 0.5, 1.0),\n\
-												 vec4(1, 1, 1, 1.0),\n\
-												 vec4(0.5, 2,-0.5, 1),\n\
-												 vec4( 1.5, 0,0.5, 1),\n\
-												 vec4( 1,  1, - 1, 1),\n\
-												 vec4(1.5,  0,  - 0.5, 1.0));\n\
+				const vec4 vertices3[6]= vec4[6](vec4(0.5, sqrt(3), 0.5, 1.0),\n\
+										vec4(1, sqrt(3)/2, 1, 1.0),\n\
+										vec4(0.5,sqrt(3),-0.5,1),\n\
+										vec4(1.5,0,0.5,1),\n\
+										vec4(1,sqrt(3)/2,-1,1),\n\
+										vec4(1.5, 0, -0.5, 1.0));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices3[i]+gl_in[0].gl_Position;\n\
@@ -344,12 +344,12 @@ gl_PrimitiveID = 2;\n\
 				}\n\
 				EndPrimitive();\n\
 //CARA 4\n\
-				 vec4 vertices4[6]= vec4[6](vec4( 0.5,  2, - 0.5,1),\n\
-										vec4( 1, 1, -1,1),\n\
-										vec4( - 0.5,  2, - 0.5,1),\n\
-										vec4( 0.5,  0,  - 1.5,1),\n\
-										vec4( - 1, 1,  - 1,1),\n\
-										vec4(- 0.5, 0, - 1.5,1));\n\
+				const vec4 vertices4[6]= vec4[6](vec4(0.5,sqrt(3),-0.5,1),\n\
+										vec4(1,sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,sqrt(3),-0.5,1),\n\
+										vec4(0.5,0,-1.5,1),\n\
+										vec4(-1,sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,0,-1.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices4[i]+gl_in[0].gl_Position;\n\
@@ -358,10 +358,10 @@ gl_PrimitiveID = 3;\n\
 				}\n\
 				EndPrimitive();\n\
 //CARA TAPA SUPERIOR\n\
-		 vec4 vertices9[4]= vec4[4](vec4( - 0.5, 2,-0.5, 1.0),\n\
-										vec4(-0.5,2,0.5, 1.0),\n\
-										vec4(0.5,2,-0.5,1),\n\
-										vec4(0.5, 2, 0.5, 1.0));\n\
+		const vec4 vertices9[4]= vec4[4](vec4(-0.5, sqrt(3), -0.5, 1.0),\n\
+										vec4(-0.5, sqrt(3),0.5, 1.0),\n\
+										vec4(0.5,sqrt(3),-0.5,1),\n\
+										vec4(0.5, sqrt(3), 0.5, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices9[i]+gl_in[0].gl_Position;\n\
@@ -370,12 +370,12 @@ gl_PrimitiveID = 8;\n\
 				}\n\
 				EndPrimitive();\n\
 //CARA 5\n\
-				 vec4 vertices5[6]= vec4[6](vec4(-0.5,0,-1.5,1),\n\
+				const vec4 vertices5[6]= vec4[6](vec4(-0.5,0,-1.5,1),\n\
 										vec4(0.5,0,-1.5,1),\n\
-										vec4(-1,-1,-1,1),\n\
-										vec4(1,-1,-1,1),\n\
-										vec4(-0.5,-2,-0.5,1),\n\
-										vec4(0.5,-2,-0.5,1));\n\
+										vec4(-1,-sqrt(3)/2,-1,1),\n\
+										vec4(1,-sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,-sqrt(3),-0.5,1),\n\
+										vec4(0.5,-sqrt(3),-0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices5[i]+gl_in[0].gl_Position;\n\
@@ -384,12 +384,12 @@ gl_PrimitiveID = 4;\n\
 				}\n\
 				EndPrimitive();\n\
 //CARA 6\n\
-				 vec4 vertices6[6]= vec4[6](vec4(1.5, 0, -0.5, 1.0),\n\
+				const vec4 vertices6[6]= vec4[6](vec4(1.5, 0, -0.5, 1.0),\n\
 										vec4(1.5,0,0.5,1),\n\
-										vec4(1,-1,-1,1),\n\
-										vec4(1,-1,1,1),\n\
-										vec4(0.5,-2,-0.5,1),\n\
-										vec4(0.5,-2,0.5,1));\n\
+										vec4(1,-sqrt(3)/2,-1,1),\n\
+										vec4(1,-sqrt(3)/2,1,1),\n\
+										vec4(0.5,-sqrt(3),-0.5,1),\n\
+										vec4(0.5,-sqrt(3),0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices6[i]+gl_in[0].gl_Position;\n\
@@ -398,12 +398,12 @@ gl_PrimitiveID = 5;\n\
 				}\n\
 				EndPrimitive();\n\
 //CARA 7\n\
-				 vec4 vertices7[6]= vec4[6](vec4(0.5,0,1.5,1),\n\
+				const vec4 vertices7[6]= vec4[6](vec4(0.5,0,1.5,1),\n\
 										vec4(-0.5,0,1.5,1),\n\
-										vec4(1,-1,1,1),\n\
-										vec4(-1,-1,1,1),\n\
-										vec4(0.5,-2,0.5,1),\n\
-										vec4(-0.5,-2,0.5,1));\n\
+										vec4(1,-sqrt(3)/2,1,1),\n\
+										vec4(-1,-sqrt(3)/2,1,1),\n\
+										vec4(0.5,-sqrt(3),0.5,1),\n\
+										vec4(-0.5,-sqrt(3),0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices7[i]+gl_in[0].gl_Position;\n\
@@ -412,12 +412,12 @@ gl_PrimitiveID = 6;\n\
 				}\n\
 				EndPrimitive();\n\
 //CARA 8\n\
-				 vec4 vertices8[6]= vec4[6](vec4(-1.5,0,0.5,1),\n\
+				const vec4 vertices8[6]= vec4[6](vec4(-1.5,0,0.5,1),\n\
 										vec4(-1.5,0,-0.5,1),\n\
-										vec4(-1,-1,1,1),\n\
-										vec4(-1,-1,-1,1),\n\
-										vec4(-0.5,-2,0.5,1),\n\
-										vec4(-0.5,-2,-0.5,1));\n\
+										vec4(-1,-sqrt(3)/2,1,1),\n\
+										vec4(-1,-sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,-sqrt(3),0.5,1),\n\
+										vec4(-0.5,-sqrt(3),-0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices8[i]+gl_in[0].gl_Position;\n\
@@ -426,10 +426,10 @@ gl_PrimitiveID = 7;\n\
 				}\n\
 				EndPrimitive();\n\
 //CARA TAPA INFERIOR\n\
-				 vec4 vertices10[4]= vec4[4](vec4(-0.5,-2, -0.5, 1.0),\n\
-												 vec4(0.5, -2, -0.5, 1.0),\n\
-												 vec4(-0.5,-2,0.5,1),\n\
-												 vec4(0.5, -2, 0.5, 1.0));\n\
+				const vec4 vertices10[4]= vec4[4](vec4(-0.5, -sqrt(3), -0.5, 1.0),\n\
+										vec4(0.5, -sqrt(3), -0.5, 1.0),\n\
+										vec4(-0.5,-sqrt(3),0.5,1),\n\
+										vec4(0.5, -sqrt(3), 0.5, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices10[i]+gl_in[0].gl_Position;\n\
@@ -438,10 +438,10 @@ gl_PrimitiveID = 9;\n\
 				}\n\
 				EndPrimitive();\n\
 //CARA LATERAL 1\n\
-				 vec4 vertices11[4]= vec4[4](vec4(-1.5,0,0.5,1),\n\
-												 vec4(-1,-1,1,1),\n\
-												 vec4(-1,1,1,1),\n\
-											 	 vec4(-0.5,0,1.5,1));\n\
+				const vec4 vertices11[4]= vec4[4](vec4(-1.5,0,0.5,1),\n\
+										vec4(-1,-sqrt(3)/2,1,1),\n\
+										vec4(-1,sqrt(3)/2,1,1),\n\
+										vec4(-0.5,0,1.5,1));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices11[i]+gl_in[0].gl_Position;\n\
@@ -450,10 +450,10 @@ gl_PrimitiveID = 10;\n\
 				}\n\
 				EndPrimitive();\n\
 //CARA LATERAL 2\n\
-				 vec4 vertices12[4]= vec4[4](vec4(1,1,1,1),\n\
-												vec4(0.5,0,1.5,1),\n\
-												vec4(1.5,0,0.5,1),\n\
-												vec4(1,-1,1,1));\n\
+				const vec4 vertices12[4]= vec4[4](vec4(1,sqrt(3)/2,1,1),\n\
+										vec4(0.5,0,1.5,1),\n\
+										vec4(1.5,0,0.5,1),\n\
+										vec4(1,-sqrt(3)/2,1,1));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices12[i]+gl_in[0].gl_Position;\n\
@@ -462,10 +462,10 @@ gl_PrimitiveID = 11;\n\
 				}\n\
 				EndPrimitive();\n\
 //CARA LATERAL 3\n\
-				 vec4 vertices13[4]= vec4[4](vec4(1,1,-1,1),\n\
-												 vec4(1.5,0,-0.5,1),\n\
-												 vec4(0.5,0,-1.5,1),\n\
-												 vec4(1,-1,-1,1));\n\
+				const vec4 vertices13[4]= vec4[4](vec4(1,sqrt(3)/2,-1,1),\n\
+										vec4(1.5,0,-0.5,1),\n\
+										vec4(0.5,0,-1.5,1),\n\
+										vec4(1,-sqrt(3)/2,-1,1));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices13[i]+gl_in[0].gl_Position;\n\
@@ -474,10 +474,10 @@ gl_PrimitiveID = 12;\n\
 				}\n\
 				EndPrimitive();\n\
 ////CARA LATERAL 4\n\
-				 vec4 vertices14[4]= vec4[4](vec4(-1,-1,-1,1),\n\
-												 vec4(-1.5,0,-0.5,1),\n\
-												 vec4(-0.5,0,-1.5,1),\n\
-												 vec4(-1,1,-1,1));\n\
+				const vec4 vertices14[4]= vec4[4](vec4(-1,-sqrt(3)/2,-1,1),\n\
+										vec4(-1.5,0,-0.5,1),\n\
+										vec4(-0.5,0,-1.5,1),\n\
+										vec4(-1,sqrt(3)/2,-1,1));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices14[i]+gl_in[0].gl_Position;\n\
