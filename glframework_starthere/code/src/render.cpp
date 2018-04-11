@@ -76,6 +76,17 @@ namespace Exercise4 {
 
 }
 
+namespace Exercise5 {
+	void  myInitCode(void);
+	GLuint myShaderCompile(void);
+
+	void myCleanupCode(void);
+	glm::vec3 tPos = { 0,0,0 };
+	void myRenderCode(double currentTime);
+
+
+}
+
 
 
 
@@ -155,6 +166,7 @@ void GLinit(int width, int height) {
 	Exercise1::myInitCode();
 	Exercise3::myInitCode();
 	Exercise4::myInitCode();
+	Exercise5::myInitCode();
 	MyFirstShader::myInitCode();
 
 
@@ -172,7 +184,8 @@ void GLcleanup() {
 
 	Exercise1::myCleanupCode();
 	Exercise3::myCleanupCode();
-	Exercise4::myCleanupCode();
+	Exercise4::myCleanupCode(); 
+	Exercise5::myCleanupCode();
 	MyFirstShader::myCleanupCode();
 
 }
@@ -192,6 +205,7 @@ void GLrender(double currentTime) {
 	Axis::drawAxis();
 	Cube::drawCube();*/
 	//EX1
+
 	/*
 	//EX1
 	Exercise1::myRenderCode(currentTime);
@@ -206,6 +220,8 @@ void GLrender(double currentTime) {
 	seed = { -5,5,0 };
 	Exercise1::myRenderCode(currentTime);
 	*/
+
+
 	//EX2
 	/*seed = { 0,0,0 };
 	rotationMatrix = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
@@ -238,6 +254,7 @@ void GLrender(double currentTime) {
 	MyFirstShader::myRenderCode(currentTime);
 	seed = { 3,3 * sqrt(3),2 };
 	MyFirstShader::myRenderCode(currentTime);*/
+
 	//EX3
 	/*rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
 	seedR = { -4,fakeGravity,0,1 };
@@ -255,6 +272,7 @@ void GLrender(double currentTime) {
 	seedR = { 4,fakeGravity,0 ,1 };
 	Exercise3::myRenderCode(currentTime);
 	fakeGravity -= 0.1;*/
+
 	//EX4
 	/*rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
 	seedR = { -8,fakeGravity,0,1 };
@@ -272,6 +290,24 @@ void GLrender(double currentTime) {
 	seedR = { 8,fakeGravity,0 ,1 };
 	Exercise4::myRenderCode(currentTime);
 	fakeGravity -= 0.1;*/
+
+	//EX5
+	rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+	seedR = { -4,fakeGravity,0,1 };
+	Exercise5::myRenderCode(currentTime);
+	rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+	seedR = { -2,fakeGravity,0 ,1 };
+	Exercise5::myRenderCode(currentTime);
+	rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+	seedR = { 0,fakeGravity,0 ,1 };
+	Exercise5::myRenderCode(currentTime);
+	rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
+	seedR = { 2,fakeGravity,0 ,1 };
+	Exercise5::myRenderCode(currentTime);
+	rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+	seedR = { 4,fakeGravity,0 ,1 };
+	Exercise5::myRenderCode(currentTime);
+	fakeGravity -= 0.1;
 
 
 	//MyFirstShader::myRenderCode(currentTime);
@@ -1245,6 +1281,193 @@ const vec4 colors[14] = vec4[14](vec4(1,0,0,1),vec4(0,1,0,1),vec4(0,0,1,1),vec4(
 
 
 }
+
+namespace Exercise5 {
+	GLuint myRenderProgram;
+	GLuint myVAO;
+	glm::vec3 Pos;
+
+	void myCleanupCode(void) {
+		glDeleteVertexArrays(1, &myVAO);
+		glDeleteProgram(myRenderProgram);
+	}
+	GLuint myShaderCompile(void) {
+		static const GLchar * vertex_shader_source[] =
+		{
+			"#version 330\n\
+		\n\
+		void main() {\n\
+		const vec4 vertices[3] = vec4[3](vec4( 0.25, -0.25,0.5, 1.0),\n\
+									   vec4(0.25, 0.25, 0.5, 1.0),\n\
+										vec4(-0.25, -0.25, 0.5, 1.0));\n\
+		gl_Position = vertices[gl_VertexID];\n\
+		}"
+		};
+
+		static const GLchar* geom_shader_source[] =
+		{
+			"#version 330 \n\
+			uniform mat4 rotation;\n\
+			uniform mat4 mvp;\n\
+			uniform vec4 seed;\n\
+			uniform vec4 color;\n\
+			layout(triangles) in;\n\
+			layout(triangle_strip, max_vertices = 24) out;\n\
+			void main()\n\
+			{\n\
+				const vec4 vertices[4] = vec4[4](vec4(0.25, -0.25, 0.25, 1.0),\n\
+										vec4(0.25, 0.25, 0.25, 1.0),\n\
+										vec4(-0.25, -0.25, 0.25, 1.0),\n\
+										vec4(-0.25, 0.25, 0.25, 1.0));\n\
+				\n\
+				//CARA 1\n\
+				for (int i = 0; i<4; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices[i]+gl_in[0].gl_Position+seed;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+				\n\
+				//CARA 2\n\
+				const vec4 vertices2[4]= vec4[4](vec4(0.25, 0.25, 0.25, 1.0),\n\
+										vec4(0.25, 0.25, -0.25, 1.0),\n\
+										vec4(-0.25, 0.25, 0.25, 1.0),\n\
+										vec4(-0.25, 0.25, -0.25, 1.0));\n\
+				for (int i = 0; i<4; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices2[i]+gl_in[0].gl_Position+seed;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+				//CARA 3\n\
+				const vec4 vertices3[4]= vec4[4](vec4(-0.25, -0.25, 0.25, 1.0),\n\
+										vec4(-0.25, 0.25, 0.25, 1.0),\n\
+										vec4(-0.25, -0.25, -0.25, 1.0),\n\
+										vec4(-0.25, 0.25, -0.25, 1.0));\n\
+				for (int i = 0; i<4; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices3[i]+gl_in[0].gl_Position+seed;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+				//CARA 4\n\
+				const vec4 vertices4[4]= vec4[4](vec4(-0.25, -0.25, -0.25, 1.0),\n\
+										vec4(-0.25, 0.25, -0.25, 1.0),\n\
+										vec4(0.25, -0.25, -0.25, 1.0),\n\
+										vec4(0.25, 0.25, -0.25, 1.0));\n\
+				for (int i = 0; i<4; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices4[i]+gl_in[0].gl_Position+seed;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+				//CARA 5\n\
+				const vec4 vertices5[4]= vec4[4](vec4(-0.25, -0.25, 0.25, 1.0),\n\
+										vec4(-0.25, -0.25, -0.25, 1.0),\n\
+										vec4(0.25, -0.25, 0.25, 1.0),\n\
+										vec4(0.25, -0.25, -0.25, 1.0));\n\
+				for (int i = 0; i<4; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices5[i]+gl_in[0].gl_Position+seed;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+				//CARA 6\n\
+				const vec4 vertices6[4]= vec4[4](vec4(0.25, -0.25, -0.25, 1.0),\n\
+										vec4(0.25, 0.25, -0.25, 1.0),\n\
+										vec4(0.25, -0.25, 0.25, 1.0),\n\
+										vec4(0.25, 0.25, 0.25, 1.0));\n\
+				for (int i = 0; i<4; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices6[i]+gl_in[0].gl_Position+seed;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+			}"
+		};
+		static const GLchar * fragment_shader_source[] =
+		{
+			"#version 330\n\
+		\n\
+		out vec4 color;\n\
+		uniform float time;\n\
+		\n\
+		void main() {\n\
+	   color = vec4(0,0.5 + 0.5 * sin(3*time),0,1); \n\
+		}"
+		};
+
+
+
+		GLuint geom_shader;
+		GLuint vertex_shader;
+		GLuint fragment_shader;
+		GLuint program;
+
+		vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
+		glCompileShader(vertex_shader);
+
+
+		fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
+		glCompileShader(fragment_shader);
+
+		geom_shader = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(geom_shader, 1, geom_shader_source, NULL);
+		glCompileShader(geom_shader);
+
+		program = glCreateProgram();
+		glAttachShader(program, vertex_shader);
+		glAttachShader(program, fragment_shader);
+		glAttachShader(program, geom_shader);
+		glLinkProgram(program);
+
+		glDeleteShader(vertex_shader);
+		glDeleteShader(fragment_shader);
+
+		return program;
+	}
+
+
+	void  myInitCode(void) {
+
+		myRenderProgram = myShaderCompile();
+		glCreateVertexArrays(1, &myVAO);
+		glBindVertexArray(myVAO);
+
+
+	}
+
+
+	void myRenderCode(double currentTime) {
+
+		glUseProgram(myRenderProgram);
+		glUniform4f(glGetUniformLocation(myRenderProgram, "seed"), (GLfloat)seedR.x, (GLfloat)seedR.y, (GLfloat)seedR.z, (GLfloat)seedR.w);
+
+		GLint locationID = glGetUniformLocation(myRenderProgram, "mvp");
+		glUniformMatrix4fv(locationID, 1, GL_FALSE, glm::value_ptr(RV::_MVP));
+
+		locationID = glGetUniformLocation(myRenderProgram, "rotation");
+
+		glUniformMatrix4fv(locationID, 1, GL_FALSE, glm::value_ptr(rotationMatrix));
+		float green = 0.5f + 0.5f*sin(3.f*currentTime);
+		glUniform4f(glGetUniformLocation(myRenderProgram, "color"), 0.f, 0.f, 0.f, 0.f);
+
+		glUniform4f(glGetUniformLocation(myRenderProgram, "seed"), (GLfloat)seedR.x, (GLfloat)seedR.y, (GLfloat)seedR.z, (GLfloat)seedR.w);
+
+		glUniform1f(glGetUniformLocation(myRenderProgram, "time"), (GLfloat)currentTime);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
+	}
+
+
+}
+
+
+
 ////////////////////////////////////////////////// BOX
 namespace Box {
 	GLuint cubeVao;
