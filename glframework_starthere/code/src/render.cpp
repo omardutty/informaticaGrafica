@@ -5,12 +5,17 @@
 #include <cassert>
 
 #include "GL_framework.h"
+
+#include <imgui\imgui.h>
+#include <imgui\imgui_impl_sdl_gl3.h>
+
 ///////// fw decl
 
 glm::vec3 seed = { 0,10,0 };
 glm::vec4 seedR = { 0,10,0,1 };
 float fakeGravity = 22;
 glm::mat4 rotationMatrix;
+bool e1 = true, e2 = false, e3 = false, e4 = false, e5 = false, e6 =false, e7 = false;
 
 namespace ImGui {
 	void Render();
@@ -87,7 +92,24 @@ namespace Exercise5 {
 
 }
 
+void GUI() {
+	bool show = true;
+	ImGui::Begin("Shaders", &show, 0);
 
+	// Do your GUI code here....
+	{
+		ImGui::Checkbox("Exercise 1", &e1);
+		ImGui::Checkbox("Exercise 2", &e2);
+		ImGui::Checkbox("Exercise 3", &e3);
+		ImGui::Checkbox("Exercise 4", &e4);
+		ImGui::Checkbox("Exercise 5", &e5);
+		ImGui::Checkbox("Exercise 6", &e6);
+		ImGui::Checkbox("Exercise 7", &e7);
+	}
+	// .........................
+
+	ImGui::End();
+}
 
 
 ////////////////
@@ -204,122 +226,146 @@ void GLrender(double currentTime) {
 	/*Box::drawCube();
 	Axis::drawAxis();
 	Cube::drawCube();*/
+
+	
+
 	//EX1
-
-	/*
-	//EX1
-	Exercise1::myRenderCode(currentTime);
-	seed = { 0,0,0 };
-	Exercise1::myRenderCode(currentTime);
-	seed = { 5,0,0 };
-	Exercise1::myRenderCode(currentTime);
-	seed = { -5,0,0 };
-	Exercise1::myRenderCode(currentTime);
-	seed = { 5,5,0 };
-	Exercise1::myRenderCode(currentTime);
-	seed = { -5,5,0 };
-	Exercise1::myRenderCode(currentTime);
-	*/
-
-
-	//EX2
-	/*seed = { 0,0,0 };
-	rotationMatrix = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { 0,2*sqrt(3),0 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { 0,4 * sqrt(3),0 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { 3,0,0 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { 3,2 * sqrt(3),0 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { 3,4 * sqrt(3),0 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { -3,0,0 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { -3,2 * sqrt(3),0 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { -3,4 * sqrt(3),0 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { -3,sqrt(3),2 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { -3,3*sqrt(3),2 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { 0,sqrt(3),2 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { 0,3*sqrt(3),2 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { 3,sqrt(3),2 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { 3,3 * sqrt(3),2 };
-	MyFirstShader::myRenderCode(currentTime);*/
-
-	//EX3
-	/*rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-	seedR = { -4,fakeGravity,0,1 };
-	Exercise3::myRenderCode(currentTime);
-	rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-	seedR = { -2,fakeGravity,0 ,1 };
-	Exercise3::myRenderCode(currentTime);
-	rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
-	seedR = { 0,fakeGravity,0 ,1 };
-	Exercise3::myRenderCode(currentTime);
-	rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
-	seedR = { 2,fakeGravity,0 ,1 };
-	Exercise3::myRenderCode(currentTime);
-	rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
-	seedR = { 4,fakeGravity,0 ,1 };
-	Exercise3::myRenderCode(currentTime);
-	fakeGravity -= 0.1;*/
-
-	//EX4
-	/*rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-	seedR = { -8,fakeGravity,0,1 };
-	Exercise4::myRenderCode(currentTime);
-	rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-	seedR = { -4,fakeGravity,0 ,1 };
-	Exercise4::myRenderCode(currentTime);
-	rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
-	seedR = { 0,fakeGravity,0 ,1 };
-	Exercise4::myRenderCode(currentTime);
-	rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
-	seedR = { 4,fakeGravity,0 ,1 };
-	Exercise4::myRenderCode(currentTime);
-	rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
-	seedR = { 8,fakeGravity,0 ,1 };
-	Exercise4::myRenderCode(currentTime);
-	fakeGravity -= 0.1;*/
-
-	//EX5
-	rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
-	seedR = { -12,fakeGravity,0,1 };
-	Exercise5::myRenderCode(currentTime);
-	rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-	seedR = { -8,fakeGravity,0,1 };
-	Exercise5::myRenderCode(currentTime);
-	rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-	seedR = { -4,fakeGravity,0 ,1 };
-	Exercise5::myRenderCode(currentTime);
-	rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
-	seedR = { 0,fakeGravity,0 ,1 };
-	Exercise5::myRenderCode(currentTime);
-	rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
-	seedR = { 4,fakeGravity,0 ,1 };
-	Exercise5::myRenderCode(currentTime);
-	rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
-	seedR = { 8,fakeGravity,0 ,1 };
-	Exercise5::myRenderCode(currentTime);
-	rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-	seedR = { 12,fakeGravity,0,1 };
-	Exercise5::myRenderCode(currentTime);
-	fakeGravity -= 0.8;
-	if (fakeGravity < -10) {
-		fakeGravity = 22;
+	if (e1) {
+		seed = { 0,10,0 };
+		Exercise1::myRenderCode(currentTime);
+		seed = { 0,0,0 };
+		Exercise1::myRenderCode(currentTime);
+		seed = { 5,0,0 };
+		Exercise1::myRenderCode(currentTime);
+		seed = { -5,0,0 };
+		Exercise1::myRenderCode(currentTime);
+		seed = { 5,5,0 };
+		Exercise1::myRenderCode(currentTime);
+		seed = { -5,5,0 };
+		Exercise1::myRenderCode(currentTime);		
 	}
-
-
-	//MyFirstShader::myRenderCode(currentTime);
+	//EX2
+	if (e2) {
+		seed = { 0,0,0 };
+		rotationMatrix = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 0,2*sqrt(3),0 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 0,4 * sqrt(3),0 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 3,0,0 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 3,2 * sqrt(3),0 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 3,4 * sqrt(3),0 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { -3,0,0 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { -3,2 * sqrt(3),0 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { -3,4 * sqrt(3),0 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { -3,sqrt(3),2 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { -3,3*sqrt(3),2 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 0,sqrt(3),2 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 0,3*sqrt(3),2 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 3,sqrt(3),2 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 3,3 * sqrt(3),2 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { -3,sqrt(3),-2 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { -3,3 * sqrt(3),-2 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 0,sqrt(3),-2 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 0,3 * sqrt(3),-2 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 3,sqrt(3),-2 };
+		MyFirstShader::myRenderCode(currentTime);
+		seed = { 3,3 * sqrt(3),-2 };
+		MyFirstShader::myRenderCode(currentTime);
+	}
+	//EX3
+	if (e3) {
+		rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+		seedR = { -4,fakeGravity,0,1 };
+		Exercise3::myRenderCode(currentTime);
+		rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+		seedR = { -2,fakeGravity,0 ,1 };
+		Exercise3::myRenderCode(currentTime);
+		rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+		seedR = { 0,fakeGravity,0 ,1 };
+		Exercise3::myRenderCode(currentTime);
+		rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
+		seedR = { 2,fakeGravity,0 ,1 };
+		Exercise3::myRenderCode(currentTime);
+		rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+		seedR = { 4,fakeGravity,0 ,1 };
+		Exercise3::myRenderCode(currentTime);
+		fakeGravity -= 0.5;
+		if (fakeGravity < -18) {
+			fakeGravity = 22;
+		}
+	}
+	//EX4
+	if (e4) {
+		rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+		seedR = { -8,fakeGravity,0,1 };
+		Exercise4::myRenderCode(currentTime);
+		rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+		seedR = { -4,fakeGravity,0 ,1 };
+		Exercise4::myRenderCode(currentTime);
+		rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+		seedR = { 0,fakeGravity,0 ,1 };
+		Exercise4::myRenderCode(currentTime);
+		rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
+		seedR = { 4,fakeGravity,0 ,1 };
+		Exercise4::myRenderCode(currentTime);
+		rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+		seedR = { 8,fakeGravity,0 ,1 };
+		Exercise4::myRenderCode(currentTime);
+		fakeGravity -= 0.5;
+		if (fakeGravity < -18) {
+			fakeGravity = 22;
+		}
+	}
+	//EX5
+	if (e5) {
+		rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+		seedR = { -12,fakeGravity,0,1 };
+		Exercise5::myRenderCode(currentTime);
+		rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+		seedR = { -8,fakeGravity,0,1 };
+		Exercise5::myRenderCode(currentTime);
+		rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+		seedR = { -4,fakeGravity,0 ,1 };
+		Exercise5::myRenderCode(currentTime);
+		rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+		seedR = { 0,fakeGravity,0 ,1 };
+		Exercise5::myRenderCode(currentTime);
+		rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
+		seedR = { 4,fakeGravity,0 ,1 };
+		Exercise5::myRenderCode(currentTime);
+		rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+		seedR = { 8,fakeGravity,0 ,1 };
+		Exercise5::myRenderCode(currentTime);
+		rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+		seedR = { 12,fakeGravity,0,1 };
+		Exercise5::myRenderCode(currentTime);
+		fakeGravity -= 0.8;
+		if (fakeGravity < -10) {
+			fakeGravity = 22;
+		}
+	}
+	if (e6) {
+	}
+	if (e7) {
+	}
 
 	ImGui::Render();
 }
