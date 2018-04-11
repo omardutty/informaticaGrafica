@@ -206,23 +206,38 @@ void GLrender(double currentTime) {
 	seed = { -5,5,0 };
 	Exercise1::myRenderCode(currentTime);
 	*/
-	//EX6a
-	seed = { 0,0,0 };
+	//EX2
+	/*seed = { 0,0,0 };
+	rotationMatrix = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 	MyFirstShader::myRenderCode(currentTime);
 	seed = { 0,2*sqrt(3),0 };
 	MyFirstShader::myRenderCode(currentTime);
+	seed = { 0,4 * sqrt(3),0 };
+	MyFirstShader::myRenderCode(currentTime);
 	seed = { 3,0,0 };
 	MyFirstShader::myRenderCode(currentTime);
-	seed = { 3,2*sqrt(3),0 };
+	seed = { 3,2 * sqrt(3),0 };
+	MyFirstShader::myRenderCode(currentTime);
+	seed = { 3,4 * sqrt(3),0 };
+	MyFirstShader::myRenderCode(currentTime);
+	seed = { -3,0,0 };
+	MyFirstShader::myRenderCode(currentTime);
+	seed = { -3,2 * sqrt(3),0 };
+	MyFirstShader::myRenderCode(currentTime);
+	seed = { -3,4 * sqrt(3),0 };
+	MyFirstShader::myRenderCode(currentTime);
+	seed = { -3,sqrt(3),2 };
+	MyFirstShader::myRenderCode(currentTime);
+	seed = { -3,3*sqrt(3),2 };
 	MyFirstShader::myRenderCode(currentTime);
 	seed = { 0,sqrt(3),2 };
 	MyFirstShader::myRenderCode(currentTime);
+	seed = { 0,3*sqrt(3),2 };
+	MyFirstShader::myRenderCode(currentTime);
 	seed = { 3,sqrt(3),2 };
 	MyFirstShader::myRenderCode(currentTime);
-	seed = { 0,sqrt(3),-2 };
-	MyFirstShader::myRenderCode(currentTime);
-	seed = { 3,sqrt(3),-2 };
-	MyFirstShader::myRenderCode(currentTime);
+	seed = { 3,3 * sqrt(3),2 };
+	MyFirstShader::myRenderCode(currentTime);*/
 	//EX3
 	/*rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
 	seedR = { -4,fakeGravity,0,1 };
@@ -321,7 +336,7 @@ namespace MyFirstShader {
 
 		static const GLchar* geom_shader_source[] =
 		{ "#version 330 \n\
-			uniform mat4 rotation;\n\
+			uniform mat4 mvp;\n\
 			uniform vec4 seed;\n\
 			layout(triangles) in;\n\
 			layout(triangle_strip, max_vertices = 72) out;\n\
@@ -337,7 +352,7 @@ namespace MyFirstShader {
 //CARA 1\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = (vertices[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices[i]+seed);\n\
 gl_PrimitiveID = 0;\n\
 					EmitVertex();\n\
 				}\n\
@@ -352,7 +367,7 @@ gl_PrimitiveID = 0;\n\
 										vec4(0.5, 0, 1.5, 1.0));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = (vertices2[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices2[i]+seed);\n\
 gl_PrimitiveID = 1;\n\
 					EmitVertex();\n\
 				}\n\
@@ -366,7 +381,7 @@ gl_PrimitiveID = 1;\n\
 										vec4(1.5, 0, -0.5, 1.0));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = (vertices3[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices3[i]+seed);\n\
 gl_PrimitiveID = 2;\n\
 					EmitVertex();\n\
 				}\n\
@@ -380,7 +395,7 @@ gl_PrimitiveID = 2;\n\
 										vec4(-0.5,0,-1.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = (vertices4[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices4[i]+seed);\n\
 gl_PrimitiveID = 3;\n\
 					EmitVertex();\n\
 				}\n\
@@ -392,7 +407,7 @@ gl_PrimitiveID = 3;\n\
 										vec4(0.5, sqrt(3), 0.5, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = (vertices9[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices9[i]+seed);\n\
 gl_PrimitiveID = 8;\n\
 					EmitVertex();\n\
 				}\n\
@@ -406,7 +421,7 @@ gl_PrimitiveID = 8;\n\
 										vec4(0.5,-sqrt(3),-0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = (vertices5[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices5[i]+seed);\n\
 gl_PrimitiveID = 4;\n\
 					EmitVertex();\n\
 				}\n\
@@ -420,7 +435,7 @@ gl_PrimitiveID = 4;\n\
 										vec4(0.5,-sqrt(3),0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = (vertices6[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices6[i]+seed);\n\
 gl_PrimitiveID = 5;\n\
 					EmitVertex();\n\
 				}\n\
@@ -434,7 +449,7 @@ gl_PrimitiveID = 5;\n\
 										vec4(-0.5,-sqrt(3),0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = (vertices7[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices7[i]+seed);\n\
 gl_PrimitiveID = 6;\n\
 					EmitVertex();\n\
 				}\n\
@@ -448,7 +463,7 @@ gl_PrimitiveID = 6;\n\
 										vec4(-0.5,-sqrt(3),-0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = (vertices8[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices8[i]+seed);\n\
 gl_PrimitiveID = 7;\n\
 					EmitVertex();\n\
 				}\n\
@@ -460,7 +475,7 @@ gl_PrimitiveID = 7;\n\
 										vec4(0.5, -sqrt(3), 0.5, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = (vertices10[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices10[i]+seed);\n\
 gl_PrimitiveID = 9;\n\
 					EmitVertex();\n\
 				}\n\
@@ -472,7 +487,7 @@ gl_PrimitiveID = 9;\n\
 										vec4(-0.5,0,1.5,1));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = (vertices11[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices11[i]+seed);\n\
 gl_PrimitiveID = 10;\n\
 					EmitVertex();\n\
 				}\n\
@@ -484,7 +499,7 @@ gl_PrimitiveID = 10;\n\
 										vec4(1,-sqrt(3)/2,1,1));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = (vertices12[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices12[i]+seed);\n\
 gl_PrimitiveID = 11;\n\
 					EmitVertex();\n\
 				}\n\
@@ -496,7 +511,7 @@ gl_PrimitiveID = 11;\n\
 										vec4(1,-sqrt(3)/2,-1,1));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = (vertices13[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices13[i]+seed);\n\
 gl_PrimitiveID = 12;\n\
 					EmitVertex();\n\
 				}\n\
@@ -508,7 +523,7 @@ gl_PrimitiveID = 12;\n\
 										vec4(-1,sqrt(3)/2,-1,1));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = (vertices14[i]+gl_in[0].gl_Position+seed)*rotation;\n\
+					gl_Position = mvp*(vertices14[i]+seed);\n\
 gl_PrimitiveID = 13;\n\
 					EmitVertex();\n\
 				}\n\
@@ -575,7 +590,7 @@ const vec4 colors[14] = vec4[14](vec4(1,0,0,1),vec4(0,1,0,1),vec4(0,0,1,1),vec4(
 
 		glUseProgram(myRenderProgram);
 		glm::mat4 tMatrix = { cos(currentTime),0,-sin(currentTime),0,0,1,0,0,sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-		GLint locationID = glGetUniformLocation(myRenderProgram, "rotation");
+		GLint locationID = glGetUniformLocation(myRenderProgram, "mvp");
 		glUniformMatrix4fv(locationID, 1, GL_FALSE, glm::value_ptr(RV::_MVP));
 		glUniform4f(glGetUniformLocation(myRenderProgram, "seed"), (GLfloat)seed.x, (GLfloat)seed.y, (GLfloat)seed.z,1.0);
 		glUniform1f(glGetUniformLocation(myRenderProgram, "color"), 1.0);
