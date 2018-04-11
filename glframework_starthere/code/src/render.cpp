@@ -9,7 +9,7 @@
 
 glm::vec3 seed = { 0,10,0 };
 glm::vec4 seedR = { 0,10,0,1 };
-float fakeGravity = 8;
+float fakeGravity = 22;
 glm::mat4 rotationMatrix;
 
 namespace ImGui {
@@ -292,22 +292,31 @@ void GLrender(double currentTime) {
 	fakeGravity -= 0.1;*/
 
 	//EX5
+	rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+	seedR = { -9,fakeGravity,0,1 };
+	Exercise5::myRenderCode(currentTime);
 	rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-	seedR = { -4,fakeGravity,0,1 };
+	seedR = { -6,fakeGravity,0,1 };
 	Exercise5::myRenderCode(currentTime);
 	rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-	seedR = { -2,fakeGravity,0 ,1 };
+	seedR = { -3,fakeGravity,0 ,1 };
 	Exercise5::myRenderCode(currentTime);
 	rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
 	seedR = { 0,fakeGravity,0 ,1 };
 	Exercise5::myRenderCode(currentTime);
 	rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
-	seedR = { 2,fakeGravity,0 ,1 };
+	seedR = { 3,fakeGravity,0 ,1 };
 	Exercise5::myRenderCode(currentTime);
 	rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
-	seedR = { 4,fakeGravity,0 ,1 };
+	seedR = { 6,fakeGravity,0 ,1 };
 	Exercise5::myRenderCode(currentTime);
-	fakeGravity -= 0.1;
+	rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+	seedR = { 9,fakeGravity,0,1 };
+	Exercise5::myRenderCode(currentTime);
+	fakeGravity -= 0.8;
+	if (fakeGravity < -10) {
+		fakeGravity = 22;
+	}
 
 
 	//MyFirstShader::myRenderCode(currentTime);
@@ -1393,7 +1402,7 @@ namespace Exercise5 {
 		uniform float time;\n\
 		\n\
 		void main() {\n\
-	   color = vec4(0,0.5 + 0.5 * sin(3*time),0,1); \n\
+	   color = vec4(0.5 + 0.5 * sin(3*time),1,0.5 + 0.5 * sin(3*time),1); \n\
 		}"
 		};
 
