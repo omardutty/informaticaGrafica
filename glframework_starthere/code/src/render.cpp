@@ -293,25 +293,25 @@ void GLrender(double currentTime) {
 
 	//EX5
 	rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
-	seedR = { -9,fakeGravity,0,1 };
+	seedR = { -12,fakeGravity,0,1 };
 	Exercise5::myRenderCode(currentTime);
 	rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-	seedR = { -6,fakeGravity,0,1 };
+	seedR = { -8,fakeGravity,0,1 };
 	Exercise5::myRenderCode(currentTime);
 	rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-	seedR = { -3,fakeGravity,0 ,1 };
+	seedR = { -4,fakeGravity,0 ,1 };
 	Exercise5::myRenderCode(currentTime);
 	rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
 	seedR = { 0,fakeGravity,0 ,1 };
 	Exercise5::myRenderCode(currentTime);
 	rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
-	seedR = { 3,fakeGravity,0 ,1 };
+	seedR = { 4,fakeGravity,0 ,1 };
 	Exercise5::myRenderCode(currentTime);
 	rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
-	seedR = { 6,fakeGravity,0 ,1 };
+	seedR = { 8,fakeGravity,0 ,1 };
 	Exercise5::myRenderCode(currentTime);
 	rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-	seedR = { 9,fakeGravity,0,1 };
+	seedR = { 12,fakeGravity,0,1 };
 	Exercise5::myRenderCode(currentTime);
 	fakeGravity -= 0.8;
 	if (fakeGravity < -10) {
@@ -1316,79 +1316,196 @@ namespace Exercise5 {
 		static const GLchar* geom_shader_source[] =
 		{
 			"#version 330 \n\
-			uniform mat4 rotation;\n\
 			uniform mat4 mvp;\n\
+			uniform mat4 rotation;\n\
 			uniform vec4 seed;\n\
-			uniform vec4 color;\n\
 			layout(triangles) in;\n\
-			layout(triangle_strip, max_vertices = 24) out;\n\
+			layout(triangle_strip, max_vertices = 72) out;\n\
 			void main()\n\
 			{\n\
-				const vec4 vertices[4] = vec4[4](vec4(0.25, -0.25, 0.25, 1.0),\n\
-										vec4(0.25, 0.25, 0.25, 1.0),\n\
-										vec4(-0.25, -0.25, 0.25, 1.0),\n\
-										vec4(-0.25, 0.25, 0.25, 1.0));\n\
+				const vec4 vertices[6] = vec4[6](vec4(-0.5, sqrt(3), -0.5, 1.0),\n\
+										vec4(-1,sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,sqrt(3),0.5,1),\n\
+										vec4(-1.5,0,-0.5,1),\n\
+										vec4(-1,sqrt(3)/2,1,1),\n\
+										vec4(-1.5,0,0.5,1));\n\
 				\n\
-				//CARA 1\n\
-				for (int i = 0; i<4; i++)\n\
+//CARA 1\n\
+				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*vertices[i]+seed;\n\
+gl_PrimitiveID = 0;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
 				\n\
-				//CARA 2\n\
-				const vec4 vertices2[4]= vec4[4](vec4(0.25, 0.25, 0.25, 1.0),\n\
-										vec4(0.25, 0.25, -0.25, 1.0),\n\
-										vec4(-0.25, 0.25, 0.25, 1.0),\n\
-										vec4(-0.25, 0.25, -0.25, 1.0));\n\
-				for (int i = 0; i<4; i++)\n\
+//CARA 2\n\
+				const vec4 vertices2[6]= vec4[6](vec4(-0.5,sqrt(3), 0.5, 1.0),\n\
+										vec4(-1, sqrt(3)/2, 1, 1.0),\n\
+										vec4(0.5,sqrt(3),0.5,1),\n\
+										vec4(-0.5,0,1.5,1),\n\
+										vec4(1,sqrt(3)/2,1,1),\n\
+										vec4(0.5, 0, 1.5, 1.0));\n\
+				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices2[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*vertices2[i]+seed;\n\
+gl_PrimitiveID = 1;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
-				//CARA 3\n\
-				const vec4 vertices3[4]= vec4[4](vec4(-0.25, -0.25, 0.25, 1.0),\n\
-										vec4(-0.25, 0.25, 0.25, 1.0),\n\
-										vec4(-0.25, -0.25, -0.25, 1.0),\n\
-										vec4(-0.25, 0.25, -0.25, 1.0));\n\
-				for (int i = 0; i<4; i++)\n\
+//CARA 3\n\
+				const vec4 vertices3[6]= vec4[6](vec4(0.5, sqrt(3), 0.5, 1.0),\n\
+										vec4(1, sqrt(3)/2, 1, 1.0),\n\
+										vec4(0.5,sqrt(3),-0.5,1),\n\
+										vec4(1.5,0,0.5,1),\n\
+										vec4(1,sqrt(3)/2,-1,1),\n\
+										vec4(1.5, 0, -0.5, 1.0));\n\
+				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices3[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*vertices3[i]+seed;\n\
+gl_PrimitiveID = 2;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
-				//CARA 4\n\
-				const vec4 vertices4[4]= vec4[4](vec4(-0.25, -0.25, -0.25, 1.0),\n\
-										vec4(-0.25, 0.25, -0.25, 1.0),\n\
-										vec4(0.25, -0.25, -0.25, 1.0),\n\
-										vec4(0.25, 0.25, -0.25, 1.0));\n\
-				for (int i = 0; i<4; i++)\n\
+//CARA 4\n\
+				const vec4 vertices4[6]= vec4[6](vec4(0.5,sqrt(3),-0.5,1),\n\
+										vec4(1,sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,sqrt(3),-0.5,1),\n\
+										vec4(0.5,0,-1.5,1),\n\
+										vec4(-1,sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,0,-1.5,1));\n\
+				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices4[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*vertices4[i]+seed;\n\
+gl_PrimitiveID = 3;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
-				//CARA 5\n\
-				const vec4 vertices5[4]= vec4[4](vec4(-0.25, -0.25, 0.25, 1.0),\n\
-										vec4(-0.25, -0.25, -0.25, 1.0),\n\
-										vec4(0.25, -0.25, 0.25, 1.0),\n\
-										vec4(0.25, -0.25, -0.25, 1.0));\n\
+//CARA TAPA SUPERIOR\n\
+		const vec4 vertices9[4]= vec4[4](vec4(-0.5, sqrt(3), -0.5, 1.0),\n\
+										vec4(-0.5, sqrt(3),0.5, 1.0),\n\
+										vec4(0.5,sqrt(3),-0.5,1),\n\
+										vec4(0.5, sqrt(3), 0.5, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices5[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*vertices9[i]+seed;\n\
+gl_PrimitiveID = 8;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
-				//CARA 6\n\
-				const vec4 vertices6[4]= vec4[4](vec4(0.25, -0.25, -0.25, 1.0),\n\
-										vec4(0.25, 0.25, -0.25, 1.0),\n\
-										vec4(0.25, -0.25, 0.25, 1.0),\n\
-										vec4(0.25, 0.25, 0.25, 1.0));\n\
+//CARA 5\n\
+				const vec4 vertices5[6]= vec4[6](vec4(-0.5,0,-1.5,1),\n\
+										vec4(0.5,0,-1.5,1),\n\
+										vec4(-1,-sqrt(3)/2,-1,1),\n\
+										vec4(1,-sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,-sqrt(3),-0.5,1),\n\
+										vec4(0.5,-sqrt(3),-0.5,1));\n\
+				for (int i = 0; i<6; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices5[i]+seed;\n\
+gl_PrimitiveID = 4;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA 6\n\
+				const vec4 vertices6[6]= vec4[6](vec4(1.5, 0, -0.5, 1.0),\n\
+										vec4(1.5,0,0.5,1),\n\
+										vec4(1,-sqrt(3)/2,-1,1),\n\
+										vec4(1,-sqrt(3)/2,1,1),\n\
+										vec4(0.5,-sqrt(3),-0.5,1),\n\
+										vec4(0.5,-sqrt(3),0.5,1));\n\
+				for (int i = 0; i<6; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices6[i]+seed;\n\
+gl_PrimitiveID = 5;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA 7\n\
+				const vec4 vertices7[6]= vec4[6](vec4(0.5,0,1.5,1),\n\
+										vec4(-0.5,0,1.5,1),\n\
+										vec4(1,-sqrt(3)/2,1,1),\n\
+										vec4(-1,-sqrt(3)/2,1,1),\n\
+										vec4(0.5,-sqrt(3),0.5,1),\n\
+										vec4(-0.5,-sqrt(3),0.5,1));\n\
+				for (int i = 0; i<6; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices7[i]+seed;\n\
+gl_PrimitiveID = 6;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA 8\n\
+				const vec4 vertices8[6]= vec4[6](vec4(-1.5,0,0.5,1),\n\
+										vec4(-1.5,0,-0.5,1),\n\
+										vec4(-1,-sqrt(3)/2,1,1),\n\
+										vec4(-1,-sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,-sqrt(3),0.5,1),\n\
+										vec4(-0.5,-sqrt(3),-0.5,1));\n\
+				for (int i = 0; i<6; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices8[i]+seed;\n\
+gl_PrimitiveID = 7;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA TAPA INFERIOR\n\
+				const vec4 vertices10[4]= vec4[4](vec4(-0.5, -sqrt(3), -0.5, 1.0),\n\
+										vec4(0.5, -sqrt(3), -0.5, 1.0),\n\
+										vec4(-0.5,-sqrt(3),0.5,1),\n\
+										vec4(0.5, -sqrt(3), 0.5, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices6[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*vertices10[i]+seed;\n\
+gl_PrimitiveID = 9;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA LATERAL 1\n\
+				const vec4 vertices11[4]= vec4[4](vec4(-1.5,0,0.5,1),\n\
+										vec4(-1,-sqrt(3)/2,1,1),\n\
+										vec4(-1,sqrt(3)/2,1,1),\n\
+										vec4(-0.5,0,1.5,1));\n\
+				for (int i = 0; i<4; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices11[i]+seed;\n\
+gl_PrimitiveID = 10;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA LATERAL 2\n\
+				const vec4 vertices12[4]= vec4[4](vec4(1,sqrt(3)/2,1,1),\n\
+										vec4(0.5,0,1.5,1),\n\
+										vec4(1.5,0,0.5,1),\n\
+										vec4(1,-sqrt(3)/2,1,1));\n\
+				for (int i = 0; i<4; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices12[i]+seed;\n\
+gl_PrimitiveID = 11;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA LATERAL 3\n\
+				const vec4 vertices13[4]= vec4[4](vec4(1,sqrt(3)/2,-1,1),\n\
+										vec4(1.5,0,-0.5,1),\n\
+										vec4(0.5,0,-1.5,1),\n\
+										vec4(1,-sqrt(3)/2,-1,1));\n\
+				for (int i = 0; i<4; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices13[i]+seed;\n\
+gl_PrimitiveID = 12;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+////CARA LATERAL 4\n\
+				const vec4 vertices14[4]= vec4[4](vec4(-1,-sqrt(3)/2,-1,1),\n\
+										vec4(-1.5,0,-0.5,1),\n\
+										vec4(-0.5,0,-1.5,1),\n\
+										vec4(-1,sqrt(3)/2,-1,1));\n\
+				for (int i = 0; i<4; i++)\n\
+				{\n\
+					gl_Position = mvp*rotation*vertices14[i]+seed;\n\
+gl_PrimitiveID = 13;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
