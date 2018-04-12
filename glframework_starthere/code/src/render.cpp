@@ -3,7 +3,7 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <cstdio>
 #include <cassert>
-#include<time.h>
+#include <time.h>
 
 #include "GL_framework.h"
 
@@ -14,11 +14,16 @@
 
 glm::vec3 seed = { 0,10,0 };
 glm::vec4 seedR = { 0,10,0,1 };
+bool pause = false;
 float fakeGravity = 22;
 glm::mat4 rotationMatrix;
 bool e1 = true, e2 = false, e3 = false, e4 = false, e5 = false, e6 =false, e7 = false;
 bool controlE1 = true;
 float r1x, r1y, r1z, r2x, r2y, r2z, r3x, r3y, r3z, r4x, r4y, r4z, r5x, r5y, r5z, r6x, r6y, r6z;
+glm::vec4 rColor;
+static int cam = 0;
+float W, H;
+glm::mat4 escalar = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 
 namespace ImGui {
 	void Render();
@@ -95,6 +100,17 @@ namespace Exercise5 {
 
 }
 
+namespace Exercise5Visual {
+	void  myInitCode(void);
+	GLuint myShaderCompile(void);
+
+	void myCleanupCode(void);
+	glm::vec3 tPos = { 0,0,0 };
+	void myRenderCode(double currentTime);
+
+
+}
+
 namespace Exercise6 {
 	void  myInitCode(void);
 	GLuint myShaderCompile(void);
@@ -106,12 +122,16 @@ namespace Exercise6 {
 
 }
 
+
 void GUI() {
 	bool show = true;
 	ImGui::Begin("Shaders", &show, 0);
 
 	// Do your GUI code here....
 	{
+		
+		ImGui::RadioButton("Perspective", &cam,0);
+		ImGui::RadioButton("Ortho", &cam,1);
 		ImGui::Checkbox("Exercise 1", &e1);
 		ImGui::Checkbox("Exercise 2", &e2);
 		ImGui::Checkbox("Exercise 3", &e3);
@@ -181,11 +201,20 @@ void GLmousecb(MouseEvent ev) {
 	}
 	RV::prevMouse.lastx = ev.posx;
 	RV::prevMouse.lasty = ev.posy;
+	
+	if (cam == 0) {
+		RV::_projection = glm::perspective(RV::FOV, W / H, RV::zNear, RV::zFar);
+	}
+	else {
+		RV::_projection = glm::ortho((float)-W / -50.f, (float)W / -50.f, (float)H / -50.f, (float)-H / -50.f, 0.1f, 100.f);
+	}
 }
 
 void GLinit(int width, int height) {
+	W = width;
+	H = height;
 	glViewport(0, 0, width, height);
-	glClearColor(0.2f, 0.2f, 0.2f, 1.f);
+	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glClearDepth(1.f);
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_DEPTH_TEST);
@@ -204,6 +233,7 @@ void GLinit(int width, int height) {
 	Exercise3::myInitCode();
 	Exercise4::myInitCode();
 	Exercise5::myInitCode();
+	Exercise5Visual::myInitCode();
 	Exercise6::myInitCode();
 	MyFirstShader::myInitCode();
 
@@ -224,6 +254,7 @@ void GLcleanup() {
 	Exercise3::myCleanupCode();
 	Exercise4::myCleanupCode(); 
 	Exercise5::myCleanupCode();
+	Exercise5Visual::myCleanupCode();
 	Exercise6::myCleanupCode();
 	MyFirstShader::myCleanupCode();
 
@@ -244,30 +275,29 @@ void GLrender(double currentTime) {
 	Cube::drawCube();*/
 
 	
-
 	//EX1
 	if (e1) {
-		if (controlE1) {
-			r1x = (rand() % 15) - 7;
-			r1y = (rand() % 15) - 7;
-			r1z = -(rand() % 5);
-			r2x = (rand() % 15) - 7;
-			r2y = (rand() % 15) - 7;
-			r2z = -(rand() % 5);
-			r3x = (rand() % 15) - 7;
-			r3y = (rand() % 15) - 7;
-			r3z = -(rand() % 5);
-			r4x = (rand() % 15) - 7;
-			r4y = (rand() % 15) - 7;
-			r4z = -(rand() % 5);
-			r5x = (rand() % 15) - 7;
-			r5y = (rand() % 15) - 7;
-			r5z = -(rand() % 5);
-			r6x = (rand() % 15) - 7;
-			r6y = (rand() % 15) - 7;
-			r6z = -(rand() % 5);
-			controlE1 = false;
-		}
+			if (controlE1) {
+				r1x = (rand() % 15) - 7;
+				r1y = (rand() % 15) - 7;
+				r1z = -(rand() % 5);
+				r2x = (rand() % 15) - 7;
+				r2y = (rand() % 15) - 7;
+				r2z = -(rand() % 5);
+				r3x = (rand() % 15) - 7;
+				r3y = (rand() % 15) - 7;
+				r3z = -(rand() % 5);
+				r4x = (rand() % 15) - 7;
+				r4y = (rand() % 15) - 7;
+				r4z = -(rand() % 5);
+				r5x = (rand() % 15) - 7;
+				r5y = (rand() % 15) - 7;
+				r5z = -(rand() % 5);
+				r6x = (rand() % 15) - 7;
+				r6y = (rand() % 15) - 7;
+				r6z = -(rand() % 5);
+				controlE1 = false;
+			}
 			seed = { r1x,r1y,r1z };
 			Exercise1::myRenderCode(currentTime);
 			seed = { r2x,r2y,r2z };
@@ -280,128 +310,183 @@ void GLrender(double currentTime) {
 			Exercise1::myRenderCode(currentTime);
 			seed = { r6x,r6y,r6z };
 			Exercise1::myRenderCode(currentTime);
-	}
+		}
 	else {
-		controlE1 = true;
-	}
+			controlE1 = true;
+		}
 	//EX2
 	if (e2) {
-		seed = { 0,0,0 };
-		rotationMatrix = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 0,2*sqrt(3),0 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 0,4 * sqrt(3),0 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 3,0,0 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 3,2 * sqrt(3),0 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 3,4 * sqrt(3),0 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { -3,0,0 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { -3,2 * sqrt(3),0 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { -3,4 * sqrt(3),0 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { -3,sqrt(3),2 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { -3,3*sqrt(3),2 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 0,sqrt(3),2 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 0,3*sqrt(3),2 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 3,sqrt(3),2 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 3,3 * sqrt(3),2 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { -3,sqrt(3),-2 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { -3,3 * sqrt(3),-2 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 0,sqrt(3),-2 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 0,3 * sqrt(3),-2 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 3,sqrt(3),-2 };
-		MyFirstShader::myRenderCode(currentTime);
-		seed = { 3,3 * sqrt(3),-2 };
-		MyFirstShader::myRenderCode(currentTime);
-	}
+			seed = { 0,0,0 };
+			rotationMatrix = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 0,2 * sqrt(3),0 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 0,4 * sqrt(3),0 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 3,0,0 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 3,2 * sqrt(3),0 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 3,4 * sqrt(3),0 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { -3,0,0 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { -3,2 * sqrt(3),0 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { -3,4 * sqrt(3),0 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { -3,sqrt(3),2 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { -3,3 * sqrt(3),2 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 0,sqrt(3),2 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 0,3 * sqrt(3),2 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 3,sqrt(3),2 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 3,3 * sqrt(3),2 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { -3,sqrt(3),-2 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { -3,3 * sqrt(3),-2 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 0,sqrt(3),-2 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 0,3 * sqrt(3),-2 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 3,sqrt(3),-2 };
+			MyFirstShader::myRenderCode(currentTime);
+			seed = { 3,3 * sqrt(3),-2 };
+			MyFirstShader::myRenderCode(currentTime);
+		}
 	//EX3
 	if (e3) {
-		rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-		seedR = { -4,fakeGravity,0,1 };
-		Exercise3::myRenderCode(currentTime);
-		rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-		seedR = { -2,fakeGravity,0 ,1 };
-		Exercise3::myRenderCode(currentTime);
-		rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
-		seedR = { 0,fakeGravity,0 ,1 };
-		Exercise3::myRenderCode(currentTime);
-		rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
-		seedR = { 2,fakeGravity,0 ,1 };
-		Exercise3::myRenderCode(currentTime);
-		rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
-		seedR = { 4,fakeGravity,0 ,1 };
-		Exercise3::myRenderCode(currentTime);
-		fakeGravity -= 0.5;
-		if (fakeGravity < -18) {
-			fakeGravity = 22;
+		if (cam == 0) {
+			escalar = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+			seedR = { -4,fakeGravity,0,1 };
+			Exercise3::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+			seedR = { -2,fakeGravity,0 ,1 };
+			Exercise3::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 0,fakeGravity,0 ,1 };
+			Exercise3::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
+			seedR = { 2,fakeGravity,0 ,1 };
+			Exercise3::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 4,fakeGravity,0 ,1 };
+			Exercise3::myRenderCode(currentTime);
+			fakeGravity -= 0.5;
+			if (fakeGravity < -18) {
+				fakeGravity = 22;
+			}
+		}
+		else {
+			escalar = { 4,0,0,0,0,4,0,0,0,0,4,0,0,0,0,1 };
+			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+			seedR = { -1,fakeGravity,0,1 };
+			Exercise3::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+			seedR = { -0.5,fakeGravity,0 ,1 };
+			Exercise3::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 0,fakeGravity,0 ,1 };
+			Exercise3::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
+			seedR = { 0.5,fakeGravity,0 ,1 };
+			Exercise3::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 1,fakeGravity,0,1 };
+			Exercise3::myRenderCode(currentTime);
+			fakeGravity -= 0.1;
+			if (fakeGravity < -5) {
+				fakeGravity = 5;
+			}
 		}
 	}
 	//EX4
 	if (e4) {
-		rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-		seedR = { -8,fakeGravity,0,1 };
-		Exercise4::myRenderCode(currentTime);
-		rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-		seedR = { -4,fakeGravity,0 ,1 };
-		Exercise4::myRenderCode(currentTime);
-		rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
-		seedR = { 0,fakeGravity,0 ,1 };
-		Exercise4::myRenderCode(currentTime);
-		rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
-		seedR = { 4,fakeGravity,0 ,1 };
-		Exercise4::myRenderCode(currentTime);
-		rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
-		seedR = { 8,fakeGravity,0 ,1 };
-		Exercise4::myRenderCode(currentTime);
-		fakeGravity -= 0.5;
-		if (fakeGravity < -18) {
-			fakeGravity = 22;
+		if (cam == 0) {
+			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+			seedR = { -8,fakeGravity,0,1 };
+			Exercise4::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+			seedR = { -4,fakeGravity,0 ,1 };
+			Exercise4::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 0,fakeGravity,0 ,1 };
+			Exercise4::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
+			seedR = { 4,fakeGravity,0 ,1 };
+			Exercise4::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 8,fakeGravity,0 ,1 };
+			Exercise4::myRenderCode(currentTime);
+			fakeGravity -= 0.5;
+			if (fakeGravity < -18) {
+				fakeGravity = 22;
+			}
+		}
+		else {
+			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+			seedR = { -1,fakeGravity,0,1 };
+			Exercise4::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+			seedR = { -0.5,fakeGravity,0 ,1 };
+			Exercise4::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 0,fakeGravity,0 ,1 };
+			Exercise4::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
+			seedR = { 0.5,fakeGravity,0 ,1 };
+			Exercise4::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 1,fakeGravity,0 ,1 };
+			Exercise4::myRenderCode(currentTime);
+			fakeGravity -= 0.1;
+			if (fakeGravity < -5) {
+				fakeGravity = 5;
+			}
 		}
 	}
 	//EX5
 	if (e5) {
-		rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
-		seedR = { -12,fakeGravity,0,1 };
-		Exercise5::myRenderCode(currentTime);
-		rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-		seedR = { -8,fakeGravity,0,1 };
-		Exercise5::myRenderCode(currentTime);
-		rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-		seedR = { -4,fakeGravity,0 ,1 };
-		Exercise5::myRenderCode(currentTime);
-		rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
-		seedR = { 0,fakeGravity,0 ,1 };
-		Exercise5::myRenderCode(currentTime);
-		rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
-		seedR = { 4,fakeGravity,0 ,1 };
-		Exercise5::myRenderCode(currentTime);
-		rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
-		seedR = { 8,fakeGravity,0 ,1 };
-		Exercise5::myRenderCode(currentTime);
-		rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-		seedR = { 12,fakeGravity,0,1 };
-		Exercise5::myRenderCode(currentTime);
-		fakeGravity -= 0.8;
-		if (fakeGravity < -10) {
-			fakeGravity = 22;
+			rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { -12,fakeGravity,0,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+			seedR = { -8,fakeGravity,0,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+			seedR = { -4,fakeGravity,0 ,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 0,fakeGravity,0 ,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
+			seedR = { 4,fakeGravity,0 ,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 8,fakeGravity,0 ,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+			seedR = { 12,fakeGravity,0,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			fakeGravity -= 0.8;
+			if (fakeGravity < -10) {
+				fakeGravity = 22;
+			}
 		}
-	}
 	//EX6
 	if (e6) {
 		seed = { 0,0,0 };
@@ -448,6 +533,7 @@ void GLrender(double currentTime) {
 		seed = { 3,3 * sqrt(3),-2 };
 		Exercise6::myRenderCode(currentTime);
 	}
+	//EX7
 	if (e7) {
 	}
 
@@ -817,6 +903,7 @@ namespace Exercise1 {
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices[i]+gl_in[0].gl_Position;\n\
+					gl_PrimitiveID = 0;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -829,6 +916,7 @@ namespace Exercise1 {
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices2[i]+gl_in[0].gl_Position;\n\
+					gl_PrimitiveID = 1;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -840,6 +928,7 @@ namespace Exercise1 {
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices3[i]+gl_in[0].gl_Position;\n\
+					gl_PrimitiveID = 2;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -851,6 +940,7 @@ namespace Exercise1 {
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices4[i]+gl_in[0].gl_Position;\n\
+					gl_PrimitiveID = 3;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -862,6 +952,7 @@ namespace Exercise1 {
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices5[i]+gl_in[0].gl_Position;\n\
+					gl_PrimitiveID = 4;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -873,6 +964,7 @@ namespace Exercise1 {
 				for (int i = 0; i<4; i++)\n\
 				{\n\
 					gl_Position = rotation*vertices6[i]+gl_in[0].gl_Position;\n\
+					gl_PrimitiveID = 5;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -885,8 +977,8 @@ namespace Exercise1 {
 		out vec4 color;\n\
 		\n\
 		void main() {\n\
-const vec4 colors[6] = vec4[6](vec4(1,0,0,1),vec4(0,1,0,1),vec4(0,0,1,1),vec4(1,1,0,1),vec4(0,1,0,1),vec4(1,0,0,1));\n\
-		color = colors[0];\n\
+const vec4 colors[6] = vec4[6](vec4(1,0,0,1),vec4(0,1,0,1),vec4(0,0,1,1),vec4(1,1,1,1),vec4(0,1,1,1),vec4(1,1,0,1));\n\
+		color = colors[gl_PrimitiveID];\n\
 		}"
 		};
 
@@ -976,6 +1068,7 @@ namespace Exercise3 {
 			"#version 330 \n\
 			uniform mat4 rotation;\n\
 			uniform mat4 mvp;\n\
+			uniform mat4 esc;\n\
 			uniform vec4 seed;\n\
 			layout(triangles) in;\n\
 			layout(triangle_strip, max_vertices = 24) out;\n\
@@ -989,7 +1082,7 @@ namespace Exercise3 {
 				//CARA 1\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*esc*vertices[i]+gl_in[0].gl_Position+seed;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -1001,7 +1094,7 @@ namespace Exercise3 {
 										vec4(-0.25, 0.25, -0.25, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices2[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*esc*vertices2[i]+gl_in[0].gl_Position+seed;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -1012,7 +1105,7 @@ namespace Exercise3 {
 										vec4(-0.25, 0.25, -0.25, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices3[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*esc*vertices3[i]+gl_in[0].gl_Position+seed;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -1023,7 +1116,7 @@ namespace Exercise3 {
 										vec4(0.25, 0.25, -0.25, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices4[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*esc*vertices4[i]+gl_in[0].gl_Position+seed;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -1034,7 +1127,7 @@ namespace Exercise3 {
 										vec4(0.25, -0.25, -0.25, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices5[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*esc*vertices5[i]+gl_in[0].gl_Position+seed;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -1045,7 +1138,7 @@ namespace Exercise3 {
 										vec4(0.25, 0.25, 0.25, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices6[i]+gl_in[0].gl_Position+seed;\n\
+					gl_Position = mvp*rotation*esc*vertices6[i]+gl_in[0].gl_Position+seed;\n\
 					EmitVertex();\n\
 				}\n\
 				EndPrimitive();\n\
@@ -1115,8 +1208,11 @@ const vec4 colors[6] = vec4[6](vec4(1,0,0,1),vec4(0,1,0,1),vec4(0,0,1,1),vec4(1,
 		glUniformMatrix4fv(locationID, 1, GL_FALSE, glm::value_ptr(RV::_MVP));
 
 		locationID = glGetUniformLocation(myRenderProgram, "rotation");
-
 		glUniformMatrix4fv(locationID, 1, GL_FALSE, glm::value_ptr(rotationMatrix));
+
+		locationID = glGetUniformLocation(myRenderProgram, "esc");
+		glUniformMatrix4fv(locationID, 1, GL_FALSE, glm::value_ptr(escalar));
+
 		glUniform1f(glGetUniformLocation(myRenderProgram, "color"), 1.0);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -1712,9 +1808,238 @@ gl_PrimitiveID = 13;\n\
 
 		glUniform4f(glGetUniformLocation(myRenderProgram, "seed"), (GLfloat)seedR.x, (GLfloat)seedR.y, (GLfloat)seedR.z, (GLfloat)seedR.w);
 
-		glUniform1f(glGetUniformLocation(myRenderProgram, "time"), (GLfloat)rand());
+		glUniform1f(glGetUniformLocation(myRenderProgram, "time"), (GLfloat)currentTime);
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
+	}
+
+
+}
+
+namespace Exercise5Visual {
+	GLuint myRenderProgram;
+	GLuint myVAO;
+	glm::vec3 Pos;
+
+	void myCleanupCode(void) {
+		glDeleteVertexArrays(1, &myVAO);
+		glDeleteProgram(myRenderProgram);
+	}
+	GLuint myShaderCompile(void) {
+		static const GLchar * vertex_shader_source[] =
+		{
+			"#version 330\n\
+		\n\
+		void main() {\n\
+		const vec4 vertices[3] = vec4[3](vec4( 0.25, -0.25,0.5, 1.0),\n\
+									   vec4(0.25, 0.25, 0.5, 1.0),\n\
+										vec4(-0.25, -0.25, 0.5, 1.0));\n\
+		gl_Position = vertices[gl_VertexID];\n\
+		}"
+		};
+
+		static const GLchar* geom_shader_source[] =
+		{ "#version 330 \n\
+			uniform mat4 mvp;\n\
+			uniform mat4 rot;\n\
+			uniform vec4 seed;\n\
+			layout(lines) in;\n\
+			layout(line_strip, max_vertices = 72) out;\n\
+			void main()\n\
+			{\n\
+				const vec4 vertices[7] = vec4[7](vec4(-0.5, sqrt(3), -0.5, 1.0),\n\
+										vec4(-0.5,sqrt(3),0.5,1),\n\
+										vec4(-1,sqrt(3)/2,1,1),\n\
+										vec4(-1.5,0,0.5,1),\n\
+										vec4(-1.5,0,-0.5,1),\n\
+										vec4(-1,sqrt(3)/2,-1,1),\n\
+										vec4(-0.5, sqrt(3), -0.5, 1.0));\n\
+				\n\
+//CARA 1\n\
+				for (int i = 0; i<7; i++)\n\
+				{\n\
+					gl_Position = mvp*rot*vertices[i]+seed;\n\
+gl_PrimitiveID = 0;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+				\n\
+//CARA 2\n\
+				const vec4 vertices2[7]= vec4[7](vec4(-0.5,sqrt(3), 0.5, 1.0),\n\
+										vec4(0.5,sqrt(3),0.5,1),\n\
+										vec4(1,sqrt(3)/2,1,1),\n\
+										vec4(0.5, 0, 1.5, 1.0),\n\
+										vec4(-0.5, 0, 1.5, 1.0),\n\
+										vec4(-1,sqrt(3)/2,1,1),\n\
+										vec4(-0.5,sqrt(3), 0.5, 1.0));\n\
+				for (int i = 0; i<7; i++)\n\
+				{\n\
+					gl_Position = mvp*rot*vertices2[i]+seed;\n\
+gl_PrimitiveID = 1;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA 3\n\
+				const vec4 vertices3[7]= vec4[7](vec4(0.5, sqrt(3), 0.5, 1.0),\n\
+										vec4(0.5,sqrt(3),-0.5,1),\n\
+										vec4(1,sqrt(3)/2,-1,1),\n\
+										vec4(1.5, 0, -0.5, 1.0),\n\
+										vec4(1.5,0,0.5,1),\n\
+										vec4(1, sqrt(3)/2, 1, 1.0),\n\
+										vec4(0.5, sqrt(3), 0.5, 1.0));\n\
+				for (int i = 0; i<7; i++)\n\
+				{\n\
+					gl_Position = mvp*rot*vertices3[i]+seed;\n\
+gl_PrimitiveID = 2;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA 4\n\
+				const vec4 vertices4[7]= vec4[7](vec4(0.5,sqrt(3),-0.5,1),\n\
+										vec4(-0.5,sqrt(3),-0.5,1),\n\
+										vec4(-1,sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,0,-1.5,1),\n\
+										vec4(0.5,0,-1.5,1),\n\
+										vec4(1,sqrt(3)/2,-1,1),\n\
+										vec4(0.5,sqrt(3),-0.5,1));\n\
+				for (int i = 0; i<7; i++)\n\
+				{\n\
+					gl_Position = mvp*rot*vertices4[i]+seed;\n\
+gl_PrimitiveID = 3;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA 5\n\
+				const vec4 vertices5[7]= vec4[7](vec4(-0.5, -sqrt(3), -0.5, 1.0),\n\
+										vec4(-0.5,-sqrt(3),0.5,1),\n\
+										vec4(-1,-sqrt(3)/2,1,1),\n\
+										vec4(-1.5,0,0.5,1),\n\
+										vec4(-1.5,0,-0.5,1),\n\
+										vec4(-1,-sqrt(3)/2,-1,1),\n\
+										vec4(-0.5, -sqrt(3), -0.5, 1.0));\n\
+				for (int i = 0; i<7; i++)\n\
+				{\n\
+					gl_Position = mvp*rot*vertices5[i]+seed;\n\
+gl_PrimitiveID = 4;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA 6\n\
+				const vec4 vertices6[7]= vec4[7](vec4(-0.5,-sqrt(3), 0.5, 1.0),\n\
+										vec4(0.5,-sqrt(3),0.5,1),\n\
+										vec4(1,-sqrt(3)/2,1,1),\n\
+										vec4(0.5, 0, 1.5, 1.0),\n\
+										vec4(-0.5, 0, 1.5, 1.0),\n\
+										vec4(-1,-sqrt(3)/2,1,1),\n\
+										vec4(-0.5,-sqrt(3), 0.5, 1.0));\n\
+				for (int i = 0; i<7; i++)\n\
+				{\n\
+					gl_Position = mvp*rot*vertices6[i]+seed;\n\
+gl_PrimitiveID = 5;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA 7\n\
+				const vec4 vertices7[7]= vec4[7](vec4(0.5, -sqrt(3), 0.5, 1.0),\n\
+										vec4(0.5,-sqrt(3),-0.5,1),\n\
+										vec4(1,-sqrt(3)/2,-1,1),\n\
+										vec4(1.5, 0, -0.5, 1.0),\n\
+										vec4(1.5,0,0.5,1),\n\
+										vec4(1, -sqrt(3)/2, 1, 1.0),\n\
+										vec4(0.5, -sqrt(3), 0.5, 1.0));\n\
+				for (int i = 0; i<7; i++)\n\
+				{\n\
+					gl_Position = mvp*rot*vertices7[i]+seed;\n\
+gl_PrimitiveID = 6;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+//CARA 8\n\
+				const vec4 vertices8[7]= vec4[7](vec4(0.5,-sqrt(3),-0.5,1),\n\
+										vec4(-0.5,-sqrt(3),-0.5,1),\n\
+										vec4(-1,-sqrt(3)/2,-1,1),\n\
+										vec4(-0.5,0,-1.5,1),\n\
+										vec4(0.5,0,-1.5,1),\n\
+										vec4(1,-sqrt(3)/2,-1,1),\n\
+										vec4(0.5,-sqrt(3),-0.5,1));\n\
+				for (int i = 0; i<7; i++)\n\
+				{\n\
+					gl_Position = mvp*rot*vertices8[i]+seed;\n\
+gl_PrimitiveID = 7;\n\
+					EmitVertex();\n\
+				}\n\
+				EndPrimitive();\n\
+			}"
+		};
+
+		static const GLchar * fragment_shader_source[] =
+		{
+			"#version 330\n\
+		\n\
+		out vec4 color;\n\
+		\n\
+		void main() {\n\
+const vec4 colors[14] = vec4[14](vec4(1,0,0,1),vec4(0,1,0,1),vec4(0,0,1,1),vec4(1,1,0,1),vec4(0,1,0,1),vec4(1,0,0,1),vec4(1,1,0,1),vec4(0,0,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1));\n\
+		color = vec4(0,0,0,1);\n\
+		}"
+		};
+
+
+
+		GLuint geom_shader;
+		GLuint vertex_shader;
+		GLuint fragment_shader;
+		GLuint program;
+
+		vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
+		glCompileShader(vertex_shader);
+
+
+		fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
+		glCompileShader(fragment_shader);
+
+		geom_shader = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(geom_shader, 1, geom_shader_source, NULL);
+		glCompileShader(geom_shader);
+
+		program = glCreateProgram();
+		glAttachShader(program, vertex_shader);
+		glAttachShader(program, fragment_shader);
+		glAttachShader(program, geom_shader);
+		glLinkProgram(program);
+
+		glDeleteShader(vertex_shader);
+		glDeleteShader(fragment_shader);
+
+		return program;
+	}
+
+
+	void  myInitCode(void) {
+
+		myRenderProgram = myShaderCompile();
+		glCreateVertexArrays(1, &myVAO);
+		glBindVertexArray(myVAO);
+
+
+	}
+
+
+	void myRenderCode(double currentTime) {
+
+		glUseProgram(myRenderProgram);
+		glm::mat4 tMatrix = { cos(currentTime),0,-sin(currentTime),0,0,1,0,0,sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+		GLint locationID = glGetUniformLocation(myRenderProgram, "mvp");
+		glUniformMatrix4fv(locationID, 1, GL_FALSE, glm::value_ptr(RV::_MVP));
+		locationID = glGetUniformLocation(myRenderProgram, "rot");
+		glUniformMatrix4fv(locationID, 1, GL_FALSE, glm::value_ptr(rotationMatrix));
+		glUniform4f(glGetUniformLocation(myRenderProgram, "seed"), (GLfloat)seedR.x, (GLfloat)seedR.y, (GLfloat)seedR.z, 1.0);
+		glUniform1f(glGetUniformLocation(myRenderProgram, "color"), 1.0);
+		glDrawArrays(GL_LINE_STRIP, 0, 2);
 
 
 	}
