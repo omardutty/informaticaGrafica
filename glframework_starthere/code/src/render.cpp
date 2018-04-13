@@ -24,9 +24,10 @@ float g63 = 0;
 float fakeG1 = 20, fakeG2 = 20, fakeG3 = 20;
 
 glm::mat4 rotationMatrix = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
-bool e1 = true, e2 = false, e3 = false, e4 = false, e5 = false, e6 =false, e6b = false, e7 = false;
+bool e1 = true, e2 = false, e3 = false, e4 = false, e5 = false, e6 =false, e6b = false, e6c = false, e7 = false;
 bool controlE1 = true;
 bool controlE61 = true, controlE62 = true, controlE63 = true;
+bool controlE6c = true;
 float r1x, r1y, r1z, r2x, r2y, r2z, r3x, r3y, r3z, r4x, r4y, r4z, r5x, r5y, r5z, r6x, r6y, r6z;
 float randomz1, randomz2, randomz3;
 glm::vec4 rColor;
@@ -145,6 +146,7 @@ namespace Exercise6b {
 }
 
 
+
 void GUI() {
 	bool show = true;
 	ImGui::Begin("Shaders", &show, 0);
@@ -161,7 +163,9 @@ void GUI() {
 		ImGui::Checkbox("Exercise 5", &e5);
 		ImGui::Checkbox("Exercise 6", &e6);
 		ImGui::Checkbox("Exercise 6b", &e6b);
+		ImGui::Checkbox("Exercise 6c", &e6c);
 		ImGui::Checkbox("Exercise 7", &e7);
+		
 	}
 	// .........................
 
@@ -479,8 +483,15 @@ void GLrender(double currentTime) {
 	}
 	//EX5
 	if (e5) {
+		if (cam == 0) {
 			rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
 			seedR = { -12,fakeGravity,0,1 };
+			if (fakeGravity == 0) {
+				colorOK = { 1,1,1,1 };
+			}
+			else {
+				colorOK = { 0,1,0,1 };
+			}
 			Exercise5::myRenderCode(currentTime);
 			Exercise5Visual::myRenderCode(currentTime);
 			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
@@ -511,6 +522,47 @@ void GLrender(double currentTime) {
 			if (fakeGravity < -10) {
 				fakeGravity = 22;
 			}
+		}
+		else {
+			rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { -3,fakeGravity,0,1 };
+			if (fakeGravity < 0.1 && fakeGravity > -0.1) {
+				colorOK = { 1,1,1,1 };
+			}
+			else {
+				colorOK = { 0,1,0,1 };
+			}
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+			seedR = { -2,fakeGravity,0,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+			seedR = { -1,fakeGravity,0 ,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 0,fakeGravity,0 ,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),0,cos(currentTime),0,0,1,0,0,-cos(currentTime),0,sin(currentTime),0,0,0,0,1 };
+			seedR = { 1,fakeGravity,0 ,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { sin(currentTime),-cos(currentTime),0,0,cos(currentTime),sin(currentTime),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { 2,fakeGravity,0 ,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
+			seedR = { 3,fakeGravity,0,1 };
+			Exercise5::myRenderCode(currentTime);
+			Exercise5Visual::myRenderCode(currentTime);
+			fakeGravity -= 0.1;
+			if (fakeGravity < -10) {
+				fakeGravity = 10;
+			}
+		}
 		}
 	//EX6
 	if (e6) {
@@ -563,17 +615,17 @@ void GLrender(double currentTime) {
 		
 		if (cam == 0) {
 			if (controlE61) {
-				randomz1 = (rand() % 2) - 1;
+				randomz1 = (rand() % 4) - 3;
 				g61 = (rand() % 10);
 				controlE61 = false;
 			}
 			if (controlE62) {
-				randomz2 = (rand() % 2) - 1;
+				randomz2 = (rand() % 4) - 3;
 				g62 = (rand() % 10) - 9;
 				controlE62 = false;
 			}
 			if (controlE63) {
-				randomz3 = (rand() % 2) - 1;
+				randomz3 = (rand() % 4) - 3;
 				g63 = (rand() % 10) - 9;
 				controlE63 = false;
 			}
@@ -617,68 +669,105 @@ void GLrender(double currentTime) {
 		}
 		else {
 			if (controlE61) {
-				randomz1 = (rand() % 2) - 1;
+				randomz1 = (rand() % 4) - 3;
 				g61 = (rand() % 4);
 				controlE61 = false;
 			}
 			if (controlE62) {
-				randomz2 = (rand() % 2) - 1;
+				randomz2 = (rand() % 4) - 3;
 				g62 = (rand() % 4);
 				controlE62 = false;
 			}
 			if (controlE63) {
-				randomz3 = (rand() % 2) - 1;
+				randomz3 = (rand() % 4) - 3;
 				g63 = (rand() % 4);
 				controlE63 = false;
 			}
 
 			if (true) {
-				//std::cout << "DA ZERO GUNGA GUNGA" << std::endl;
-				//COMPROBAR Y
-				//if (fakeG1 + g61 == 0 || fakeG1 + g61 == sqrt(3) || fakeG1 + g61 == 2 * sqrt(3)) {
-				//	//COLOR BLANCO
-				//	color1 = { 1,1,1,1 };
-				//	colorOK = color1;
-				//}
-				//else {
-				//	color1 = { 0,1,0,1 };
-				//	colorOK = color1;
-				//}
-				//if (fakeG2 + g62 == 0 || fakeG2 + g62 == sqrt(3) || fakeG2 + g62 == 2 * sqrt(3)) {
-				//	//COLOR BLANCO
-				//	color2 = { 1,1,1,1 };
-				//	colorOK = color2;
-				//}
-				//else {
-				//	color2 = { 0,1,0,1 };
-				//	colorOK = color2;
-				//}
-				if ((fakeG3 + g63 < 0.1 && fakeG3 + g63 > -0.1)|| (fakeG3 + g63 < sqrt(3)+0.1 && fakeG3 + g63 > sqrt(3) - 0.1) || (fakeG3 + g63 < 4 * sqrt(3)+0.1) && (fakeG3 + g63 > 4 * sqrt(3) - 0.1)) {
+				if ((fakeG1 + g61 < 0.1 && fakeG1 + g61 > -0.1)/* || (fakeG1 + g61 < sqrt(3) + 0.1 && fakeG1 + g61 > sqrt(3) - 0.1) || (fakeG1 + g61 < 4 * sqrt(3) + 0.1) && (fakeG1 + g61 > 4 * sqrt(3) - 0.1)*/) {
 					//COLOR BLANCO
-					std::cout << "EN POSICION";
+					rotationMatrix = { 1,0,0,0,0,cos(0),-sin(0),0,0,sin(0),cos(0),0,0,0,0,1 };
+					if (rotationMatrix == glm::mat4(1.0f) ) {
+						color1 = { 1,1,1,1 };
+						colorOK = color1;
+					}
+					else {
+						color1 = { 0,1,0,1 };
+						colorOK = color1;
+					}
+					seedR = { 0,fakeG1 + g61,randomz1,1 };
+					Exercise6b::myRenderCode(currentTime);
+					Exercise5Visual::myRenderCode(currentTime);
+
+				}
+				else {
+					color1 = { 0,1,0,1 };
+					colorOK = color1;
+					rotationMatrix = { 1,0,0,0,0,cos(0),-sin(0),0,0,sin(0),cos(0),0,0,0,0,1 };
+					seedR = { 0,fakeG1 + g61,randomz1,1 };
+					Exercise6b::myRenderCode(currentTime);
+					Exercise5Visual::myRenderCode(currentTime);
+				}
+				if ((fakeG2 + g62 < 0.1 && fakeG2 + g62 > -0.1) /*|| (fakeG2 + g62 < sqrt(3) + 0.1 && fakeG2 + g62 > sqrt(3) - 0.1) || (fakeG2 + g63 < 4 * sqrt(3) + 0.1) && (fakeG2 + g62 > 4 * sqrt(3) - 0.1)*/) {
+					//COLOR BLANCO
+					color2 = { 1,1,1,1 };
+					colorOK = color2;
+					rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+					if (rotationMatrix == glm::mat4(1.0f)) {
+						color2 = { 1,1,1,1 };
+						colorOK = color1;
+					}
+					else {
+						color2 = { 0,1,0,1 };
+						colorOK = color2;
+					}
+					seedR = { 0.2,fakeG2 + g62,randomz2 ,1 };
+					Exercise6b::myRenderCode(currentTime);
+					Exercise5Visual::myRenderCode(currentTime);
+
+				}
+				else {
+					color2 = { 0,1,0,1 };
+					colorOK = color2;
+					rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
+					seedR = { 0.2,fakeG2 + g62,randomz2 ,1 };
+					Exercise6b::myRenderCode(currentTime);
+					Exercise5Visual::myRenderCode(currentTime);
+				}
+				if ((fakeG3 + g63 < 0.1 && fakeG3 + g63 > -0.1)/*|| (fakeG3 + g63 < sqrt(3)+0.1 && fakeG3 + g63 > sqrt(3) - 0.1) || (fakeG3 + g63 < 4 * sqrt(3)+0.1) && (fakeG3 + g63 > 4 * sqrt(3) - 0.1)*/) {
+					//COLOR BLANCO
 					color3 = { 1,1,1,1 };
 					colorOK = color3;
+
+					rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+					if (rotationMatrix == glm::mat4(1.0f)) {
+						color3 = { 1,1,1,1 };
+						colorOK = color3;
+					}
+					else {
+						color3 = { 0,1,0,1 };
+						colorOK = color3;
+					}
+					seedR = { -0.2,fakeG3 + g63,randomz3 ,1 };
+					Exercise6b::myRenderCode(currentTime);
+					Exercise5Visual::myRenderCode(currentTime);
 				}
 				else {
 					color3 = { 0,1,0,1 };
 					colorOK = color3;
+
+					rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
+					seedR = { -0.2,fakeG3 + g63,randomz3 ,1 };
+					Exercise6b::myRenderCode(currentTime);
+					Exercise5Visual::myRenderCode(currentTime);
 				}
 			}
 
-			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-			seedR = { 0,fakeG1+g61,randomz1,1 };
-			Exercise6b::myRenderCode(currentTime);
-			Exercise5Visual::myRenderCode(currentTime);
+	
 			
-			rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-			seedR = { 0.2,fakeG2+g62,randomz2 ,1 };
-			Exercise6b::myRenderCode(currentTime);
-			Exercise5Visual::myRenderCode(currentTime);
 			
-			rotationMatrix = { cos(0),-sin(0),0,0,sin(0),cos(0),0,0,0,0,1,0,0,0,0,1 };
-			seedR = { -0.2,fakeG3+g63,randomz3 ,1 };
-			Exercise6b::myRenderCode(currentTime);
-			Exercise5Visual::myRenderCode(currentTime);
+			
 			
 			if (fakeG1 < -6) {
 				fakeG1 = 6;
@@ -703,15 +792,28 @@ void GLrender(double currentTime) {
 			}
 		}
 	}
+
+	//EX6c
+	if (e6c) {
+		if (controlE6c) {
+			RV::rota[0] += 3.14159265359 /2.0;
+			controlE6c = false;
+		}
+		else {
+			controlE6c = false;
+		}
+
+	}
+
 	//EX7
 	if (e7) {
 	}
 
 
-	rotationMatrix = { 1,0,0,0,0,cos(0),-sin(0),0,0,sin(0),cos(0),0,0,0,0,1 };
+	/*rotationMatrix = { 1,0,0,0,0,cos(0),-sin(0),0,0,sin(0),cos(0),0,0,0,0,1 };
 	seedR = { 0,-0.13,randomz1,1 };
 	Exercise6b::myRenderCode(currentTime);
-	Exercise5Visual::myRenderCode(currentTime);
+	Exercise5Visual::myRenderCode(currentTime);*/
 
 
 	ImGui::Render();
@@ -1920,9 +2022,10 @@ gl_PrimitiveID = 13;\n\
 		\n\
 		out vec4 color;\n\
 		uniform float time;\n\
+			uniform vec4 colorOk;\n\
 		\n\
 		void main() {\n\
-	   color = vec4(0.5 + 0.5 * sin(3*time),1,0.5 + 0.5 * sin(3*time),1); \n\
+	   color = colorOk; \n\
 		}"
 		};
 
@@ -1982,6 +2085,7 @@ gl_PrimitiveID = 13;\n\
 		glUniformMatrix4fv(locationID, 1, GL_FALSE, glm::value_ptr(rotationMatrix));
 		float green = 0.5f + 0.5f*sin(3.f*currentTime);
 		glUniform4f(glGetUniformLocation(myRenderProgram, "color"), 0.f, 0.f, 0.f, 0.f);
+		glUniform4f(glGetUniformLocation(myRenderProgram, "colorOk"), (GLfloat)colorOK.r, (GLfloat)colorOK.g, (GLfloat)colorOK.b, 1.0);
 
 		glUniform4f(glGetUniformLocation(myRenderProgram, "seed"), (GLfloat)seedR.x, (GLfloat)seedR.y, (GLfloat)seedR.z, (GLfloat)seedR.w);
 
@@ -2156,10 +2260,11 @@ gl_PrimitiveID = 7;\n\
 			"#version 330\n\
 		\n\
 		out vec4 color;\n\
+		uniform vec4 colorOk;\n\
 		\n\
 		void main() {\n\
 const vec4 colors[14] = vec4[14](vec4(1,0,0,1),vec4(0,1,0,1),vec4(0,0,1,1),vec4(1,1,0,1),vec4(0,1,0,1),vec4(1,0,0,1),vec4(1,1,0,1),vec4(0,0,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1));\n\
-		color = vec4(0,0,0,1);\n\
+		color = {0,0,0,1};\n\
 		}"
 		};
 
@@ -2215,6 +2320,7 @@ const vec4 colors[14] = vec4[14](vec4(1,0,0,1),vec4(0,1,0,1),vec4(0,0,1,1),vec4(
 		locationID = glGetUniformLocation(myRenderProgram, "rot");
 		glUniformMatrix4fv(locationID, 1, GL_FALSE, glm::value_ptr(rotationMatrix));
 		glUniform4f(glGetUniformLocation(myRenderProgram, "seed"), (GLfloat)seedR.x, (GLfloat)seedR.y, (GLfloat)seedR.z, 1.0);
+		glUniform4f(glGetUniformLocation(myRenderProgram, "colorOk"), (GLfloat)colorOK.r, (GLfloat)colorOK.g, (GLfloat)colorOK.b, 1.0);
 		glUniform1f(glGetUniformLocation(myRenderProgram, "color"), 1.0);
 		glDrawArrays(GL_LINE_STRIP, 0, 2);
 
@@ -2491,7 +2597,7 @@ namespace Exercise6b {
 //CARA 1\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 0;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2506,7 +2612,7 @@ gl_PrimitiveID = 0;\n\
 										vec4(0.5, 0, 1.5, 1.0));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices2[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 1;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2520,7 +2626,7 @@ gl_PrimitiveID = 1;\n\
 										vec4(1.5, 0, -0.5, 1.0));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices3[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 2;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2534,7 +2640,7 @@ gl_PrimitiveID = 2;\n\
 										vec4(-0.5,0,-1.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices4[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 3;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2546,7 +2652,7 @@ gl_PrimitiveID = 3;\n\
 										vec4(0.5, sqrt(3), 0.5, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices9[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 8;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2560,7 +2666,7 @@ gl_PrimitiveID = 8;\n\
 										vec4(0.5,-sqrt(3),-0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices5[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 4;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2574,7 +2680,7 @@ gl_PrimitiveID = 4;\n\
 										vec4(0.5,-sqrt(3),0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices6[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 5;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2588,7 +2694,7 @@ gl_PrimitiveID = 5;\n\
 										vec4(-0.5,-sqrt(3),0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices7[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 6;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2602,7 +2708,7 @@ gl_PrimitiveID = 6;\n\
 										vec4(-0.5,-sqrt(3),-0.5,1));\n\
 				for (int i = 0; i<6; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices8[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 7;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2614,7 +2720,7 @@ gl_PrimitiveID = 7;\n\
 										vec4(0.5, -sqrt(3), 0.5, 1.0));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices10[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 9;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2626,7 +2732,7 @@ gl_PrimitiveID = 9;\n\
 										vec4(-0.5,0,1.5,1));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices11[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 10;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2638,7 +2744,7 @@ gl_PrimitiveID = 10;\n\
 										vec4(1,-sqrt(3)/2,1,1));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices12[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 11;\n\
 					EmitVertex();\n\
 				}\n\
@@ -2650,7 +2756,7 @@ gl_PrimitiveID = 11;\n\
 										vec4(1,-sqrt(3)/2,-1,1));\n\
 				for (int i = 0; i<4; i++)\n\
 				{\n\
-					gl_Position = mvp*rotation*vertices13[i]+seed;\n\
+					gl_Position = mvp*(rotation*vertices[i]+seed);\n\
 gl_PrimitiveID = 12;\n\
 					EmitVertex();\n\
 				}\n\
