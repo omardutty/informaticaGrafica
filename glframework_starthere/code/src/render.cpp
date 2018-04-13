@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cassert>
 #include <time.h>
+#include<iostream>
 
 #include "GL_framework.h"
 
@@ -17,19 +18,23 @@ glm::vec4 seedR = { 0,10,0,1 };
 bool pause = false;
 float fakeGravity = 22;
 
-float g61 = ((rand()%4) - 3) +20; 
-float g62 = ((rand() % 4) - 3) + 20;
-float g63 = ((rand() % 4) - 3) + 20;
-glm::mat4 rotationMatrix;
+float g61 = 0;
+float g62 = 0;
+float g63 = 0;
+float fakeG1 = 20, fakeG2 = 20, fakeG3 = 20;
+
+glm::mat4 rotationMatrix = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
 bool e1 = true, e2 = false, e3 = false, e4 = false, e5 = false, e6 =false, e6b = false, e7 = false;
 bool controlE1 = true;
-bool controlE6 = true;
+bool controlE61 = true, controlE62 = true, controlE63 = true;
 float r1x, r1y, r1z, r2x, r2y, r2z, r3x, r3y, r3z, r4x, r4y, r4z, r5x, r5y, r5z, r6x, r6y, r6z;
 float randomz1, randomz2, randomz3;
 glm::vec4 rColor;
 static int cam = 0;
 float W, H;
 glm::mat4 escalar = { 1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1 };
+
+glm::vec4 color1 = { 0,1,0,1 }, color2 = { 0,1,0,1 }, color3 = { 0,1,0,1 }, colorOK = { 0,1,0,1 };
 
 namespace ImGui {
 	void Render();
@@ -219,13 +224,6 @@ void GLmousecb(MouseEvent ev) {
 	}
 	RV::prevMouse.lastx = ev.posx;
 	RV::prevMouse.lasty = ev.posy;
-	
-	if (cam == 0) {
-		RV::_projection = glm::perspective(RV::FOV, W / H, RV::zNear, RV::zFar);
-	}
-	else {
-		RV::_projection = glm::ortho((float)-W / -50.f, (float)W / -50.f, (float)H / -50.f, (float)-H / -50.f, 0.1f, 100.f);
-	}
 }
 
 void GLinit(int width, int height) {
@@ -288,6 +286,13 @@ void GLrender(double currentTime) {
 	RV::_modelView = glm::rotate(RV::_modelView, RV::rota[0], glm::vec3(0.f, 1.f, 0.f));
 
 	RV::_MVP = RV::_projection * RV::_modelView;
+
+	if (cam == 0) {
+		RV::_projection = glm::perspective(RV::FOV, W / H, RV::zNear, RV::zFar);
+	}
+	else {
+		RV::_projection = glm::ortho((float)-W / -50.f, (float)W / -50.f, (float)H / -50.f, (float)-H / -50.f, 0.1f, 100.f);
+	}
 
 	// render code
 	/*Box::drawCube();
@@ -555,77 +560,159 @@ void GLrender(double currentTime) {
 	}
 	//EX6b
 	if (e6b) {
-		if (controlE6) {
-			randomz1 = (rand() % 2) - 1;
-			randomz2 = (rand() % 2) - 1;
-			randomz3 = (rand() % 2) - 1;
-			controlE6 = false;
-		}
+		
 		if (cam == 0) {
-			
+			if (controlE61) {
+				randomz1 = (rand() % 2) - 1;
+				g61 = (rand() % 10);
+				controlE61 = false;
+			}
+			if (controlE62) {
+				randomz2 = (rand() % 2) - 1;
+				g62 = (rand() % 10) - 9;
+				controlE62 = false;
+			}
+			if (controlE63) {
+				randomz3 = (rand() % 2) - 1;
+				g63 = (rand() % 10) - 9;
+				controlE63 = false;
+			}
+
 			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-			seedR = { 0,g61,randomz1,1 };
+			seedR = { 0,fakeG1+g61,randomz1,1 };
 			Exercise6b::myRenderCode(currentTime);
 			Exercise5Visual::myRenderCode(currentTime);
 			
 			rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-			seedR = { 3,g62,randomz2 ,1 };
+			seedR = { 3,fakeG2+g62,randomz2 ,1 };
 			Exercise6b::myRenderCode(currentTime);
 			Exercise5Visual::myRenderCode(currentTime);
 			
 			rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
-			seedR = { -3,g63,randomz3 ,1 };
+			seedR = { -3,fakeG3+g63,randomz3 ,1 };
 			Exercise6b::myRenderCode(currentTime);
 			Exercise5Visual::myRenderCode(currentTime);
 
-			g61 -= ((rand()%2)-1 )+0.1;
-			g62 -= ((rand() % 2) - 1) + 0.1;
-			g63 -= ((rand() % 2) - 1) + 0.1;
-
-			if (g61 < -18) {
-				g61 = ((rand() % 4) - 3) + 20;
+			if (fakeG1 < -18) {
+				fakeG1 = 22;
+				controlE61 = true;
 			}
-			if (g62 < -18) {
-				g62 = ((rand() % 4) - 3) + 20;
+			else {
+				fakeG1--;
 			}
-			if (g63 < -18){
-				g63 = ((rand() % 4) - 3) + 20;
+			if (fakeG2 < -18) {
+				fakeG2 = 22;
+				controlE62 = true;
+			}
+			else {
+				fakeG2--;
+			}
+			if (fakeG3 < -18) {
+				fakeG3 = 22;
+				controlE63 = true;
+			}
+			else {
+				fakeG3--;
 			}
 		}
 		else {
+			if (controlE61) {
+				randomz1 = (rand() % 2) - 1;
+				g61 = (rand() % 4);
+				controlE61 = false;
+			}
+			if (controlE62) {
+				randomz2 = (rand() % 2) - 1;
+				g62 = (rand() % 4);
+				controlE62 = false;
+			}
+			if (controlE63) {
+				randomz3 = (rand() % 2) - 1;
+				g63 = (rand() % 4);
+				controlE63 = false;
+			}
+
+			if (true) {
+				//std::cout << "DA ZERO GUNGA GUNGA" << std::endl;
+				//COMPROBAR Y
+				//if (fakeG1 + g61 == 0 || fakeG1 + g61 == sqrt(3) || fakeG1 + g61 == 2 * sqrt(3)) {
+				//	//COLOR BLANCO
+				//	color1 = { 1,1,1,1 };
+				//	colorOK = color1;
+				//}
+				//else {
+				//	color1 = { 0,1,0,1 };
+				//	colorOK = color1;
+				//}
+				//if (fakeG2 + g62 == 0 || fakeG2 + g62 == sqrt(3) || fakeG2 + g62 == 2 * sqrt(3)) {
+				//	//COLOR BLANCO
+				//	color2 = { 1,1,1,1 };
+				//	colorOK = color2;
+				//}
+				//else {
+				//	color2 = { 0,1,0,1 };
+				//	colorOK = color2;
+				//}
+				if ((fakeG3 + g63 < 0.1 && fakeG3 + g63 > -0.1)|| (fakeG3 + g63 < sqrt(3)+0.1 && fakeG3 + g63 > sqrt(3) - 0.1) || (fakeG3 + g63 < 4 * sqrt(3)+0.1) && (fakeG3 + g63 > 4 * sqrt(3) - 0.1)) {
+					//COLOR BLANCO
+					std::cout << "EN POSICION";
+					color3 = { 1,1,1,1 };
+					colorOK = color3;
+				}
+				else {
+					color3 = { 0,1,0,1 };
+					colorOK = color3;
+				}
+			}
+
 			rotationMatrix = { 1,0,0,0,0,cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1 };
-			seedR = { 0,g61,randomz1,1 };
+			seedR = { 0,fakeG1+g61,randomz1,1 };
 			Exercise6b::myRenderCode(currentTime);
 			Exercise5Visual::myRenderCode(currentTime);
 			
 			rotationMatrix = { cos(currentTime),0,sin(currentTime),0,0,1,0,0,-sin(currentTime),0,cos(currentTime),0,0,0,0,1 };
-			seedR = { 0.2,g62,randomz2 ,1 };
+			seedR = { 0.2,fakeG2+g62,randomz2 ,1 };
 			Exercise6b::myRenderCode(currentTime);
 			Exercise5Visual::myRenderCode(currentTime);
 			
-			rotationMatrix = { cos(currentTime),-sin(currentTime),0,0,sin(currentTime),cos(currentTime),0,0,0,0,1,0,0,0,0,1 };
-			seedR = { -0.2,g63,randomz3 ,1 };
+			rotationMatrix = { cos(0),-sin(0),0,0,sin(0),cos(0),0,0,0,0,1,0,0,0,0,1 };
+			seedR = { -0.2,fakeG3+g63,randomz3 ,1 };
 			Exercise6b::myRenderCode(currentTime);
 			Exercise5Visual::myRenderCode(currentTime);
 			
-			g61 -= 0.1;
-			g62 -= 0.15;
-			g63 -= 0.2;
-
-			if (g61 < -18) {
-				g61 = ((rand() % 4) - 3) + 20;
+			if (fakeG1 < -6) {
+				fakeG1 = 6;
+				controlE61 = true;
 			}
-			if (g62 < -18) {
-				g62 = ((rand() % 4) - 3) + 20;
+			else {
+				fakeG1-=0.1;
 			}
-			if (g63 < -18) {
-				g63 = ((rand() % 4) - 3) + 20;
+			if (fakeG2 < -6) {
+				fakeG2 = 6;
+				controlE62 = true;
+			}
+			else {
+				fakeG2-=0.1;
+			}
+			if (fakeG3 < -6) {
+				fakeG3 = 6;
+				controlE63 = true;
+			}
+			else {
+				fakeG3-=0.1;
 			}
 		}
 	}
 	//EX7
 	if (e7) {
 	}
+
+
+	rotationMatrix = { 1,0,0,0,0,cos(0),-sin(0),0,0,sin(0),cos(0),0,0,0,0,1 };
+	seedR = { 0,-0.13,randomz1,1 };
+	Exercise6b::myRenderCode(currentTime);
+	Exercise5Visual::myRenderCode(currentTime);
+
 
 	ImGui::Render();
 }
@@ -2588,10 +2675,11 @@ gl_PrimitiveID = 13;\n\
 			"#version 330\n\
 		\n\
 		out vec4 color;\n\
+		uniform vec4 colorOK;\n\
 		\n\
 		void main() {\n\
 const vec4 colors[14] = vec4[14](vec4(1,0,0,1),vec4(0,1,0,1),vec4(0,0,1,1),vec4(1,1,0,1),vec4(0,1,0,1),vec4(1,0,0,1),vec4(1,1,0,1),vec4(0,0,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1),vec4(1,1,1,1));\n\
-		color = vec4(0,1,0,1);\n\
+		color = colorOK;\n\
 		}"
 		};
 
@@ -2642,6 +2730,7 @@ const vec4 colors[14] = vec4[14](vec4(1,0,0,1),vec4(0,1,0,1),vec4(0,0,1,1),vec4(
 
 		glUseProgram(myRenderProgram);
 		glUniform4f(glGetUniformLocation(myRenderProgram, "seed"), (GLfloat)seedR.x, (GLfloat)seedR.y, (GLfloat)seedR.z, (GLfloat)seedR.w);
+		glUniform4f(glGetUniformLocation(myRenderProgram, "colorOK"), (GLfloat)colorOK.x, (GLfloat)colorOK.y, (GLfloat)colorOK.z, (GLfloat)colorOK.w);
 
 		GLint locationID = glGetUniformLocation(myRenderProgram, "mvp");
 		glUniformMatrix4fv(locationID, 1, GL_FALSE, glm::value_ptr(RV::_MVP));
@@ -3470,42 +3559,3 @@ void main() {\n\
 
 
 }
-
-
-////////////////////////////////////////// MY FIRST SHADER
-
-//namespace MyFirstShader {
-//
-//
-//	// 1.  declare shader
-//	static const GLchar * vertex_shader_source[] =
-//	{
-//		"#version 330\n\
-//		\n\
-//		void main(){\n\
-//		gl_Position = vec4(0.0,0.0,0.5,1.0);\n\
-//		}"
-//	};
-//
-//	static const GLchar * fragment_shader_source[] =
-//	{
-//		"#version 330\n\
-//		\n\
-//		out vec4 color; \n\
-//		\n\
-//		void main(){\n\
-//		color = vec4(0.0,0.8,1.0,1.0);\n\
-//		}"
-//	};
-//
-//
-//
-//
-//	//2. compile and link shader
-//	GLuint myShaderCompile(void) {
-//		GLuint vertex_shader;
-//		GLuint fragment_shader;
-//		GLuint program;
-//
-
-
